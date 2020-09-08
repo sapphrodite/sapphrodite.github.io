@@ -296,7 +296,7 @@ def generate_article_body(html_tree, article_data, generator):
         section_list.append(section["id"]) 
 
     generator.add_open_tag(tag("article"))
-    generator.append_inside_tag(tag("header"), generate_article_header, html_tree, article_data)
+    generator.append_inside_tag(tag("header", "class = \"metadata\""), generate_article_header, html_tree, article_data)
     generator.append_inside_tag(tag("nav", "class = \"toc\""), generate_toc, section_list) 
 
     for section in html_tree.find_all("section"):

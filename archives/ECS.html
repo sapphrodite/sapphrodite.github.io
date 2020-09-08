@@ -9,16 +9,14 @@
 <body>
     <header id = "site-header">
         <span> Caroline's Development Blog </span>
-        <ul id = "navmenu">
-            <div class = "navlink-div">
+        <nav id = "navmenu">
+            <ul>
                 <li> <a class = "modlink" href="/"> Main page </a>
                 <li> <a class = "modlink" href="/archives/"> Archives </a>
-            </div>
-            <div class = "navlink-div">
                 <li> <a class = "modlink" href="https://github.com/sapphrodite"> GitHub </a>
                 <li> <a class = "modlink" rel="author" href="/pages/about.html"> About </a>
-            </div>
-        </ul>
+            </ul>
+        </nav>
     </header>
     <main id = "archive-main">
         <h1> Blog Archives: ECS</h1>
@@ -29,25 +27,21 @@
         </nav>
         <section>
             
-            <hgroup>
+            <h1>
+                Game Design with ECS
+            </h1>
+            
+            <span>
+                Published on the 6th of September, 2020
+            </span>
+            
+            <span>
+                Topics:
+                <a>
+                    ECS
+                </a>
                 
-                <h1>
-                    Game Design with ECS
-                </h1>
-                
-                <h4>
-                    Published on the 6th of September, 2020
-                </h4>
-                
-                <h4>
-                    Topics:
-                    <a>
-                        ECS
-                    </a>
-                    
-                </h4>
-                
-            </hgroup>
+            </span>
             
             <p>
                 For the past several months I’ve been writing a game engine using the ECS framework, a data-oriented approach to game development that emphasizes composition and flexibility instead of traditional object-oriented methods. In my opinion, it’s more than just a programming technique - it’s a design philosophy that has its pros and cons just like everything else. Unfortunately, most articles on the subject are rather obtuse, and this was a struggle for me when first starting out. I’ve tried to include all the things I wanted to read before starting my engine, but I also cover the basics and give some extra tips.

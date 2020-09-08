@@ -6,12 +6,12 @@
     padding: 0;
 }
 
-ul {
+main ul {
     padding-left: 4ch
 }
 /* sidebar and article body */
 main, #article-nav { 
-        background-color: #f3f5ff
+    background-color: #f3f5ff
 }
 
 #site-header, #footer-nav{
@@ -19,6 +19,15 @@ main, #article-nav {
     
 }
 
+
+#article-wrapper {
+
+    display:flex;
+    flex-wrap: wrap; 
+    align-items: flex-start;
+    max-width: 170ch;
+    margin: auto;
+}
 #index-main {
     font-size: 150%;
     margin: auto;
@@ -47,28 +56,35 @@ body {
     text-decoration: underline;
 } 
 
+.metadata span {
+    display: block;
+    font-weight: bold;
+    text-align: center; 
+}
+
+.metadata { 
+    text-align: center;
+    margin: auto;
+}
 /******************/
 /**    layout    **/   
 /******************/
 
 #article-main { 
     box-sizing: border-box;
-    padding: 1em;
+    padding: 1.5em;
     flex-basis: 100%;
+    max-width: 110ch;
+    order: 2;
 }
 
 html { 
-    color: #111;
-    font-size: 100%;
+    color: #111; 
+    font-size: calc(1em + 0.5vmin);
     font-family: sans-serif;   
 }
 
-body { 
-
-    display:flex;
-    flex-wrap: wrap;
-    margin: 0;
-    align-items: flex-start;
+#article-wrapper { 
 }
  
  
@@ -134,6 +150,7 @@ section {
     padding-right: 0.5em;
     height: auto;
     margin: 0 auto;
+    order: 1;
 }
 
 #article-nav span {
@@ -199,9 +216,16 @@ hgroup {
     display: inline-block;
 }
 
-#footer-nav {
-    display: inline-block;
-    width: 100%; 
+#footer-nav ul {
+    display: flex;
+    list-style: none;
+}
+
+#prev-button, #top-button, #next-button {
+    flex-grow: 1;
+}
+
+#footer-nav {  
     font-weight: bold;
     padding: 1em 1.5em;
     position: sticky;
@@ -215,22 +239,17 @@ hgroup {
 }
 #next-button {
     text-align: right;
-}
-#prev-button, #top-button, #next-button {
-    width: 33.3%;
-    display: inline-block;
-}
+} 
 
  @media screen and (min-width: 65em) { 
     #article-nav { 
         display: block;
     }
-    #article-main, #archive-main {
-
+    #article-main, #archive-main { 
         padding: 2.5em 5em;
     }
     #article-main { 
-        flex-basis: 65%;
+        flex-basis: min(65%, 120ch);
         margin-right: 12.5%;
     }
     #site-header {
@@ -249,3 +268,16 @@ hgroup {
     }
 }
 
+
+
+
+#navmenu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#navmenu li {
+    min-width: max-content;
+    flex-basis: calc((40ch - 100%) * 1000);
+}

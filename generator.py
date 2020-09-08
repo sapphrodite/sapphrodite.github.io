@@ -67,20 +67,18 @@ def insert_file_header(article_data, generator):
     generator.append("<title> title! </title>")
 
 # Inserts HTML for the site navigation bar
-def insert_navmenu(generator): 
-    generator.add_open_tag(tag("div", "class = \"navlink-div\""))
+def insert_navmenu(generator):  
+    generator.add_open_tag(tag("ul"))
     generator.append("<li> <a class = \"modlink\" href=\"/\"> Main page </a>")
-    generator.append("<li> <a class = \"modlink\" href=\"/archives/\"> Archives </a>")
-    generator.add_close_tag(tag("div"))
-    generator.add_open_tag(tag("div", "class = \"navlink-div\""))
+    generator.append("<li> <a class = \"modlink\" href=\"/archives/\"> Archives </a>") 
     generator.append("<li> <a class = \"modlink\" href=\"https://github.com/sapphrodite\"> GitHub </a>")
-    generator.append("<li> <a class = \"modlink\" rel=\"author\" href=\"/pages/about.html\"> About </a>") 
-    generator.add_close_tag(tag("div"))
+    generator.append("<li> <a class = \"modlink\" rel=\"author\" href=\"/pages/about.html\"> About </a>")  
+    generator.add_close_tag(tag("ul"))
    
 
 def insert_site_header(generator):
     generator.append("<span> Caroline's Development Blog </span>")  
-    generator.append_inside_tag(tag("ul", "id = \"navmenu\""), insert_navmenu)
+    generator.append_inside_tag(tag("nav", "id = \"navmenu\""), insert_navmenu)
 
 def generate_page_start(generator):
     generator.append("<!DOCTYPE html>")
@@ -239,17 +237,17 @@ def generate_pretty_date(article_data, generator):
         suffix = "st"  
     else:
         suffix = "th"
-    generator.append("Published on the " + str(day) + suffix + " of " + months[int(article_data.date[1]) - 1] + ", " + str(article_data.date[0]))
+    generator.append("Published on the " + str(day) + suffix + " of " + months[int(article_data.date[1]) - 1] + ", " + str(article_data.date[0]) + "\n")
 
-def generate_hgroup(article_data, generator):
+def generate_data_display(article_data, generator):
     generator.append("<h1 id = \"article-header\"> " + article_data.title + " </h1>")
-    generator.append_inside_tag(tag("h4"), generate_pretty_date, article_data)
-    generator.append_inside_tag(tag("h4"), generate_topic_links, article_data.topics)
+    generator.append_inside_tag(tag("span"), generate_pretty_date, article_data)
+    generator.append_inside_tag(tag("span"), generate_topic_links, article_data.topics)
 
 
 def generate_article_header(html_tree, article_data, generator):
-    header_content = html_tree.find("header")  
-    generator.append_inside_tag(tag("hgroup", "class = \"metadata\""), generate_hgroup, article_data)
+    header_content = html_tree.find("intro")  
+    generate_data_display( article_data, generator)
     process_children(header_content, generator)
   
 def generate_footer_nav(prev_article, next_article):
@@ -305,27 +303,25 @@ def generate_article_body(html_tree, article_data, generator):
        generator.append_inside_tag(tag("section", "id = \"" + section["id"].replace(" ", "_") + "\""), process_section, section)  
     generator.add_close_tag(tag("article"))
 
+
+def generate_article_wrapper(html_tree, navbar_text, generator):
+    generator.append_inside_tag(tag("main", "id = \"article-main\""), generate_article_body, html_tree, article)
+    generator.add_open_tag(tag("nav", "id = \"article-nav\""))
+    generator.append(navbar_text)
+    generator.add_close_tag(tag("nav")) 
+ 
+
 def generate_article(article, navbar_text, footer_text):
 
     generator = document_constructor() 
     text = open(article.source_location, "r").read()
     html_tree = BeautifulSoup(text, 'html.parser')
  
-    generator.append("<!DOCTYPE html>")
-    generator.append("<html lang=\"en\">")
-    generator.append_inside_tag(tag("head"), insert_file_header, article_data) 
-
-    generator.add_open_tag(tag("body"))
-    generator.append_inside_tag(tag("header", "id = \"site-header\""), insert_site_header)
-
-    generator.add_open_tag(tag("nav", "id = \"article-nav\""))
-    generator.append(navbar_text)
-    generator.add_close_tag(tag("nav")) 
-
-    generator.append_inside_tag(tag("main", "id = \"article-main\""), generate_article_body, html_tree, article)
- 
+    generate_page_start(generator) 
+    generator.append_inside_tag(tag("div", "id = \"article-wrapper\""), generate_article_wrapper, html_tree, navbar_text)
     generator.append(footer_text)
-    generator.add_close_tag(tag("body"))
+    generator.add_close_tag(tag("body")) 
+
     generator.append("</html>")
  
     f = open(article.filename, "w")

@@ -7,6 +7,7 @@ class article_data:
     title = ""
     topics = []
     filename = ""
+    description = ""
     source_location = ""
 
     def __lt__ (self, b):
@@ -60,11 +61,13 @@ def generate_indentation(depth):
 #######################################################################################
 
 # Inserts HTML file metadata
-def insert_file_header(article_data, generator):
+def insert_file_header(title, description, generator):
     generator.append("<meta charset=\"UTF-8\">")
     generator.append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">")
+    if description != "":
+        generator.append("<meta name=\"description\" content=\"" + description + "\">")
     generator.append("<link rel=\"stylesheet\" href=\"../theme.css\">")
-    generator.append("<title> title! </title>")
+    generator.append("<title>" + title + " - Caroline's Development Blog </title>")
 
 # Inserts HTML for the site navigation bar
 def insert_navmenu(generator):  
@@ -80,10 +83,10 @@ def insert_site_header(generator):
     generator.append("<span> Caroline's Development Blog </span>")  
     generator.append_inside_tag(tag("nav", "id = \"navmenu\""), insert_navmenu)
 
-def generate_page_start(generator):
+def generate_page_start(title, description, generator):
     generator.append("<!DOCTYPE html>")
     generator.append("<html lang=\"en\">")
-    generator.append_inside_tag(tag("head"), insert_file_header, article_data) 
+    generator.append_inside_tag(tag("head"), insert_file_header, title, description)
 
     generator.add_open_tag(tag("body"))
     generator.append_inside_tag(tag("header", "id = \"site-header\""), insert_site_header)
@@ -103,12 +106,13 @@ def append_article_preview(article, generator):
  
 def generate_topic_page(article_group, cat_name):
     generator = document_constructor()
-    generate_page_start(generator)
+    title = "Blog Archives: " + cat_name
+    generate_page_start(title, "", generator)
 
 
     generator.add_open_tag(tag("main", "id = \"archive-main\""))
 
-    generator.append("<h1 class = \"page-header\"> Blog Archives: " + cat_name + "</h1>")
+    generator.append("<h1 class = \"page-header\">" + title +  "</h1>")
     generator.add_open_tag(tag("nav", "class = \"toc\""))
     generator.append_inside_tag(tag("ol"), generate_article_lis, article_group)
     generator.add_close_tag(tag("nav"))
@@ -124,11 +128,13 @@ def generate_topic_page(article_group, cat_name):
  
 def generate_archives_index(articles_by_quarter, articles_by_topic ): 
     generator = document_constructor()
-    generate_page_start(generator)
+    generate_page_start("Blog Archives", "", generator)
  
     generator.add_open_tag(tag("main", "id = \"index-main\""))
     generator.append("<h2> Blog Archives </h2>")
-    process_archive_batch(articles_by_quarter, articles_by_topic, transform_article_group_archives, generator)
+
+
+    process_archive_batch(articles_by_quarter, articles_by_topic, generate_section_div_archive, generator)
 
     f = open("archives/index.html", "w")
     f.write(generator.output)
@@ -151,7 +157,7 @@ def generate_main_page(article_list):
     top5 = article_list[:1]
 
     generator = document_constructor()
-    generate_page_start(generator)
+    generate_page_start("Main Page", "", generator)
 
   
     generator.add_open_tag(tag("main", "id = \"archive-main\""))  
@@ -184,16 +190,22 @@ def generate_articlegroups_li(article_batch, function, generator):
         generator.append_inside_tag(tag("li"), function, article_batch[name], name)     
 
 # Combines sect_name and a list-processed article batch into a div, for formatting
-def generate_section_div(article_batch, sect_name, function, generate_section_div):
+def generate_section_div_archive(article_batch, sect_name, generator):
     id = sect_name.replace(" ", "-")
-    generate_section_div.append("<span class = \"navlist-label\" id = \"" + id + "\">" + sect_name + "</span>")
-    generate_section_div.append_inside_tag(tag("ul", "aria-labelledby = \"" + id + "\""), 
-            generate_articlegroups_li, article_batch, function) 
+    generator.append("<span class = \"navlist-label\" id = \"" + id + "\">" + sect_name + "</span>")
+    generator.append_inside_tag(tag("ul", "class = \"article-group-archive\""), 
+            generate_articlegroups_li, article_batch, transform_article_group_archives) 
+
+def generate_section_div_collapsible(article_batch, sect_name, generator):
+    id = sect_name.replace(" ", "-")
+    generator.append("<span class = \"navlist-label\" id = \"" + id + "\">" + sect_name + "</span>")
+    generator.append_inside_tag(tag("ul", "aria-labelledby = \"" + id + "\" class = \"article-group-sidebar\""), 
+            generate_articlegroups_li, article_batch, transform_article_group_collapsible) 
 
 # Processes high-level display for archive groups - whether it generates the main page, archive index or sidebar depends on `function`
 def process_archive_batch(articles_by_quarter, articles_by_topic, function, generator ):  
-    generator.append_inside_tag(tag("div", "class = \"sidebar-sect\""), generate_section_div, articles_by_quarter, "Articles by Quarter", function)
-    generator.append_inside_tag(tag("div", "class = \"sidebar-sect\""), generate_section_div, articles_by_topic, "Articles by Topic", function)
+    generator.append_inside_tag(tag("div", "class = \"sidebar-sect\""), function, articles_by_quarter, "Articles by Quarter")
+    generator.append_inside_tag(tag("div", "class = \"sidebar-sect\""), function, articles_by_topic, "Articles by Topic")
 
 
 
@@ -332,7 +344,7 @@ def generate_article(article, navbar_text, footer_text):
     text = open(article.source_location, "r").read()
     html_tree = BeautifulSoup(text, 'html.parser')
  
-    generate_page_start(generator) 
+    generate_page_start(article.title, article.description, generator) 
     generator.append_inside_tag(tag("div", "id = \"article-wrapper\""), generate_article_wrapper, html_tree, navbar_text)
     generator.append(footer_text)
     generator.add_close_tag(tag("body")) 
@@ -404,7 +416,10 @@ for article in articles:
     articles_by_topic[topic].append(article)
 
 sidebar_generator = document_constructor()
-process_archive_batch(articles_by_quarter, articles_by_topic, transform_article_group_collapsible, sidebar_generator)
+
+ 
+
+process_archive_batch(articles_by_quarter, articles_by_topic, generate_section_div_collapsible, sidebar_generator)
 
 generate_articles(articles, sidebar_generator.output)
 generate_archives(articles_by_quarter, articles_by_topic)

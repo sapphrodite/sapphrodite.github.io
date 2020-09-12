@@ -97,7 +97,9 @@ def append_article_preview(article, generator):
     html_tree = BeautifulSoup(text, 'html.parser')
     header = html_tree.find("article").find("header")
     process_children(header, generator)
-    generator.append("<a class = \"readmore\" href = \"/" + article.filename + "\"> Read More </a>")
+    intro = html_tree.find("article").find("section")
+    process_children(intro, generator)
+    generator.append("<a class = \"readmore modlink\" href = \"/" + article.filename + "\"> Read More... </a>")
  
 def generate_topic_page(article_group, cat_name):
     generator = document_constructor()
@@ -106,13 +108,13 @@ def generate_topic_page(article_group, cat_name):
 
     generator.add_open_tag(tag("main", "id = \"archive-main\""))
 
-    generator.append("<h1> Blog Archives: " + cat_name + "</h1>")
+    generator.append("<h1 class = \"page-header\"> Blog Archives: " + cat_name + "</h1>")
     generator.add_open_tag(tag("nav", "class = \"toc\""))
     generator.append_inside_tag(tag("ol"), generate_article_lis, article_group)
     generator.add_close_tag(tag("nav"))
     
     for article in article_group:
-        generator.append_inside_tag(tag("section"), append_article_preview, article)
+        generator.append_inside_tag(tag("section", "id = \"" + article.title.replace(" ", "-") + "\""), append_article_preview, article)
     generator.add_close_tag(tag("main"))
          
 
@@ -153,11 +155,11 @@ def generate_main_page(article_list):
 
   
     generator.add_open_tag(tag("main", "id = \"archive-main\""))  
-    generator.append("""<h4> Hi! This website is currently under construction - this page isn't complete, and the about page is missing, but
-    who cares because i'm not sharing with too many people until it's finished - enjoy the one article I have :)</h4>""")
+    generator.append("""<p> Hi! This website is currently under construction - this page isn't complete, and the about page is missing, but
+    who cares because i'm not sharing with too many people until it's finished - enjoy the one article I have :)</p>""")
     generator.append("<h1> Recent Articles </h1>") 
     for article in top5:
-        generator.append_inside_tag(tag("section"), append_article_preview, article)
+        generator.append_inside_tag(tag("section", "class = \"article-preview\""), append_article_preview, article)
     generator.add_close_tag(tag("main"))
          
 
@@ -240,15 +242,14 @@ def generate_pretty_date(article_data, generator):
     generator.append("Published on the " + str(day) + suffix + " of " + months[int(article_data.date[1]) - 1] + ", " + str(article_data.date[0]) + "\n")
 
 def generate_data_display(article_data, generator):
-    generator.append("<h1 id = \"article-header\"> " + article_data.title + " </h1>")
-    generator.append_inside_tag(tag("span"), generate_pretty_date, article_data)
-    generator.append_inside_tag(tag("span"), generate_topic_links, article_data.topics)
+    generator.append("<h1 class = \"page-header\"> " + article_data.title + " </h1>")
+    sptag = tag("span", "class = \"metadata-span\"")
+    generator.append_inside_tag(sptag, generate_pretty_date, article_data)
+    generator.append_inside_tag(sptag, generate_topic_links, article_data.topics)
 
 
-def generate_article_header(html_tree, article_data, generator):
-    header_content = html_tree.find("intro")  
+def generate_metadata_header(html_tree, article_data, generator):
     generate_data_display( article_data, generator)
-    process_children(header_content, generator)
   
 def generate_footer_nav(prev_article, next_article):
     footer_generator = document_constructor()
@@ -277,13 +278,24 @@ def generate_footer_nav(prev_article, next_article):
 ##        Article Code - processes through and formats the main article content      ##
 #######################################################################################
 
+def process_attributes(tag):
+    attr_string = ""
+    for attr in tag.attrs:
+        attr_string += attr + " = \"" 
+        for attr_val in tag.attrs.get(attr):
+            attr_string += attr_val
+        attr_string += "\""
+    return attr_string
+
 # Recursively parse the children of this tag and add them to the string 
 def process_children(html_tag, generator): 
     for child in html_tag.children: 
         if isinstance(child, str):
             generator.append(child.strip())
             continue
-        generator.append_inside_tag(tag(child.name.strip()), process_children, child)  
+
+
+        generator.append_inside_tag(tag(child.name.strip(), process_attributes(child)), process_children, child)  
 
 # Processes a section and turns it into a text string
 def process_section(section, generator):  
@@ -296,7 +308,10 @@ def generate_article_body(html_tree, article_data, generator):
         section_list.append(section["id"]) 
 
     generator.add_open_tag(tag("article"))
-    generator.append_inside_tag(tag("header", "class = \"metadata\""), generate_article_header, html_tree, article_data)
+    generator.append_inside_tag(tag("header", "class = \"metadata\""), generate_metadata_header, html_tree, article_data)
+
+    header_content = html_tree.find("intro")  
+    generator.append_inside_tag(tag("section"), process_children, header_content)
     generator.append_inside_tag(tag("nav", "class = \"toc\""), generate_toc, section_list) 
 
     for section in html_tree.find_all("section"):

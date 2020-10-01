@@ -75,7 +75,7 @@ def insert_navmenu(generator):
     generator.append("<li> <a class = \"modlink\" href=\"/\"> Main page </a>")
     generator.append("<li> <a class = \"modlink\" href=\"/archives/\"> Archives </a>") 
     generator.append("<li> <a class = \"modlink\" href=\"https://github.com/sapphrodite\"> GitHub </a>")
-    generator.append("<li> <a class = \"modlink\" rel=\"author\" href=\"/pages/about.html\"> About </a>")  
+    generator.append("<li> <a class = \"modlink\" rel=\"author\" href=\"/static_pages/about.html\"> About </a>")  
     generator.add_close_tag(tag("ul"))
    
 
@@ -254,10 +254,14 @@ def generate_pretty_date(article_data, generator):
     generator.append("Published on the " + str(day) + suffix + " of " + months[int(article_data.date[1]) - 1] + ", " + str(article_data.date[0]) + "\n")
 
 def generate_data_display(article_data, generator):
-    generator.append("<h1 class = \"page-header\"> " + article_data.title + " </h1>")
     sptag = tag("span", "class = \"metadata-span\"")
-    generator.append_inside_tag(sptag, generate_pretty_date, article_data)
-    generator.append_inside_tag(sptag, generate_topic_links, article_data.topics)
+    
+    if article_data.title != "":
+        generator.append("<h1 class = \"page-header\"> " + article_data.title + " </h1>")
+    if article_data.date != "":
+        generator.append_inside_tag(sptag, generate_pretty_date, article_data) 
+    if article_data.topics != "":
+        generator.append_inside_tag(sptag, generate_topic_links, article_data.topics) 
 
 
 def generate_metadata_header(html_tree, article_data, generator):
@@ -381,15 +385,21 @@ def generate_articles(article_list, sidebar_string):
         generate_article(article, sidebar_string, generate_footer_nav(prev_article, next_article))
         prev_article = article
 
-def get_article_metadata(filename):
-    text = open("article_sources/" + filename, "r").read()
+def get_article_metadata(filename, directory):
+    text = open(directory + filename, "r").read()
     html_tree = BeautifulSoup(text, 'html.parser')
     article = article_data() 
-    article.source_location = "article_sources/" + filename.strip()
-    article.date = html_tree.find("article-creation").string.strip().split()
-    article.title = html_tree.find("article-title").string.strip()
-    article.topics = html_tree.find("article-topics").string.strip().split()
-    article.filename = "articles/" + filename
+    article.source_location = directory + filename.strip()
+    date = html_tree.find("article-creation")
+    topics = html_tree.find("article-topics")
+    title = html_tree.find("article-title")
+    if date != None:
+	    article_date = date.string.strip().split()
+    if title != None:
+	    article_title = title.string.strip().split() 
+    if topics != None:
+	    article_topics = topics.string.strip().split()
+    article.filename = directory + filename
     return article
  
 dir = "article_sources/"
@@ -397,7 +407,7 @@ article_files = [f for f in listdir(dir) if isfile(join(dir, f))]
 
 articles = []
 for file in article_files:
-    articles.append(get_article_metadata(file))
+    articles.append(get_article_metadata(file, dir))
 articles.sort()
 
 
@@ -425,3 +435,13 @@ generate_articles(articles, sidebar_generator.output)
 generate_archives(articles_by_quarter, articles_by_topic)
 
 generate_main_page(articles)
+
+static_dir = "static_sources/"
+static_files = [f for f in listdir(static_dir) if isfile(join(static_dir, f))] 
+
+statics = []
+for file in static_files:
+    statics.append(get_article_metadata(file, static_dir))
+    generate_article
+
+generate_articles(statics, sidebar_generator.output)

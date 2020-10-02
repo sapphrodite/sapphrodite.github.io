@@ -364,6 +364,23 @@ def generate_article(article, navbar_text, footer_text):
     
 
 
+def generate_static_page(article):
+
+    generator = document_constructor() 
+    text = open(article.source_location, "r").read()
+    html_tree = BeautifulSoup(text, 'html.parser')
+ 
+    generate_page_start(article.title, article.description, generator) 
+    generator.append_inside_tag(tag("main", "id = \"index-main\""), process_children, html_tree.find("section")) 
+    generator.add_close_tag(tag("body")) 
+
+    generator.append("</html>")
+ 
+    f = open(article.filename, "w")
+    f.write(generator.output)
+    f.close()
+    
+    return article
 
 
 
@@ -377,29 +394,27 @@ def generate_article(article, navbar_text, footer_text):
 def generate_articles(article_list, sidebar_string):
     prev_article = None 
     next_article = None
-    for index, article in enumerate(articles):
-        if index + 1 < len(articles):
-            next_article = articles[index + 1]
+    for index, article in enumerate(article_list):
+        if index + 1 < len(article_list):
+            next_article = article_list[index + 1]
         else:
             next_article = None
         generate_article(article, sidebar_string, generate_footer_nav(prev_article, next_article))
         prev_article = article
 
-def get_article_metadata(filename, directory):
-    text = open(directory + filename, "r").read()
+def get_article_metadata(filename, in_directory, out_directory):
+    text = open(in_directory + filename, "r").read()
     html_tree = BeautifulSoup(text, 'html.parser')
     article = article_data() 
-    article.source_location = directory + filename.strip()
+    article.source_location = in_directory + filename.strip()
     date = html_tree.find("article-creation")
     topics = html_tree.find("article-topics")
-    title = html_tree.find("article-title")
+    article.title = html_tree.find("article-title").string
     if date != None:
-	    article_date = date.string.strip().split()
-    if title != None:
-	    article_title = title.string.strip().split() 
+	    article.date = date.string.strip().split()  
     if topics != None:
-	    article_topics = topics.string.strip().split()
-    article.filename = directory + filename
+	    article.topics = topics.string.strip().split()
+    article.filename = out_directory + filename
     return article
  
 dir = "article_sources/"
@@ -407,7 +422,7 @@ article_files = [f for f in listdir(dir) if isfile(join(dir, f))]
 
 articles = []
 for file in article_files:
-    articles.append(get_article_metadata(file, dir))
+    articles.append(get_article_metadata(file, dir, "articles/"))
 articles.sort()
 
 
@@ -438,10 +453,6 @@ generate_main_page(articles)
 
 static_dir = "static_sources/"
 static_files = [f for f in listdir(static_dir) if isfile(join(static_dir, f))] 
-
-statics = []
+ 
 for file in static_files:
-    statics.append(get_article_metadata(file, static_dir))
-    generate_article
-
-generate_articles(statics, sidebar_generator.output)
+    generate_static_page(get_article_metadata(file, static_dir, "static_pages/")) 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../theme.css">
-    <title>Game Design with ECS - Caroline's Development Blog </title>
+    <title> Game Design with ECS  - Caroline's Development Blog </title>
 </head>
 <body>
     <header id = "site-header">
@@ -22,7 +22,7 @@
         <main id = "article-main">
             <article>
                 <header class = "metadata">
-                    <h1 class = "page-header"> Game Design with ECS </h1>
+                    <h1 class = "page-header">  Game Design with ECS  </h1>
                     <span class = "metadata-span">
                         Published on the 6th of September, 2020
 
@@ -42,6 +42,7 @@
                     <ol>
                         <li> <a class = "modlink" href = "#What_is_ECS?">What is ECS?</a> </li>
                         <li> <a class = "modlink" href = "#ECS’s_Design_Philosophy">ECS’s Design Philosophy</a> </li>
+                        <li> <a class = "modlink" href = "#How_to_Implement_ECS">How to Implement ECS</a> </li>
                         <li> <a class = "modlink" href = "#Design_Advice">Design Advice</a> </li>
                         <li> <a class = "modlink" href = "#In_Conclusion">In Conclusion</a> </li>
                     </ol>
@@ -58,7 +59,7 @@
                     <h2>ECS’s Design Philosophy</h2>
                     
                     <p>
-                        ECS is an acronym for Entity, Component, System - the three constituent parts of its architecture. Unlike in OOP designs, different types of entities lack distinct classes - almost all functionality and objects within your game will be represented through a combination of components and systems.
+                        First, the basics - ECS is an acronym for Entity, Component, System - the three constituent parts of its architecture. Unlike in OOP designs, different types of entities don’t have their own classes - almost all functionality and objects within your game will be represented through a combination of these.
                     </p>
                     
                     <span>
@@ -98,35 +99,51 @@
                     </p>
                     
                 </section>
+                <section id = "How_to_Implement_ECS">
+                    <h2>How to Implement ECS</h2>
+                    
+                    <p>
+                        The internet peanut gallery constantly disagrees on the right way to link entities, components and systems together, and it’s my personal belief that this debate is utterly pointless - it’s all dependent on how the rest of your code works, and this is a judgment call that’s best made after sketching out the basic systems/components and the way they work. The core of an ECS engine is the relationship between these three constituents, and implementing anything outside of that is game dependent and I can’t speak to it.
+                    </p>
+                    
+                    <p>
+                        In order to allow for better cache locality and to promote system interdependence, components are typically pooled in contiguous memory using a data structure that can access, add and delete components in linear time.  Some implementations give systems ownership of the component pools they operate on, while others store all the pools in all one place and pass in the required pools when calling the system, and yet others (like mine) do a hybrid. This choice is completely up to you and can be changed at any time with relative ease as long as your interface doesn’t bleed implementation details.
+                    </p>
+                    
+                    <p>
+                        Linking entities to the other parts of the engine is a task requiring some deliberation. Some designs register entities inside of systems and operate on that, while others create a mapping of entities to components - the important part is that each system can operate independently on contiguous blocks of components. In my eyes, this mapping is the core of the engine, and therefore should be arranged in a way that works well with the code of your systems.
+                    </p>
+                    
+                    <p>
+                        In my implementation, “entity” is an alias for u32, and each component type has a numerical ID. Each entity has a bitmap to mark which components they have, and also a simple array indexed by component type ID to store the component object ID. It may not be the most elegant solution, but besides the simplicity advantage, storing the mapping data in an independent object allows me to pass it to systems to get other components linked to the same entity in constant time and without inter-thread data races. Whatever solution you pick, make sure it doesn’t make system implementation more difficult, or else even an elegant solution will be a slowdown.
+                    </p>
+                    
+                    <p>
+                        As an aside - I said that game objects don’t get their own classes, but this is not universally true. My rule of thumb is that world state doesn’t belong in ECS - both the tilemap and player-manager have their own classes, and it’s much cleaner than forcing the data into a paradigm where it doesn’t belong.
+                    </p>
+                    
+                </section>
                 <section id = "Design_Advice">
                     <h2>Design Advice</h2>
                     
                     <p>
-                        The internet peanut gallery constantly disagrees on the right way to link entities, components and systems together, and it’s my belief that this debate is utterly pointless - it’s all dependent on how the rest of your code works, and this is a judgment call that’s best made on a case by case basis.
+                        While there may not be a standard way to implement ECS, there’s plenty of mistakes that can prevent you from utilizing the full potential of your engine. ECS isn’t a holy grail, it’s merely a paradigm available for us to use, but that means absolutely nothing if you don’t know how to make the most of it. I’ll write a whole article on optimization later, but this part will be all about design decisions that enable optimization.
                     </p>
                     
                     <p>
-                        In order to allow for better cache locality and to promote system interdependence, components are typically pooled in contiguous memory using a data structure that can access, add and delete components in constant time. Linking entities to the other parts of the engine is a task requiring some deliberation. Some designs register entities inside of systems and operate on internal component pools, while others create a mapping of entities to components, and some index component pools with entity IDs - the important part is that each system operates independently on contiguous blocks of components. In my eyes, this mapping is the core of the engine, and therefore should be arranged in a way that works well with the code of your systems.
-                    </p>
-                    
-                    <p>
-                        While there may not be a standard way to implement ECS, there’s plenty of mistakes that can prevent you from utilizing the full potential of your engine. ECS isn’t a holy grail, it’s merely a paradigm available for us to use, but that means absolutely nothing if you don’t know how to make the most of it.
-                    </p>
-                    
-                    <p>
-                        The most obvious improvement one can implement is multithreading, and ECS excels at this. I was quite surprised by how easy it was - since I had designed my systems properly, all I had to do was run different systems in different threads! Multithreading can only be implemented
+                        The most obvious improvement one can implement is multithreading, and ECS excels at this. I was quite surprised by how easy it was -  since I had designed my systems properly, all I had to do was run different systems in different threads! Multithreading can only be implemented
                         <em>
                             properly
                         </em>
-                        by ensuring that systems are completely independent in memory writes - why slow your code down with mutexes when avoiding data races completely is so simple? If something truly needs to be written by multiple threads, try to find a non-blocking synchronization because burning cycles on synchronization is a waste of valuable time.
+                        by ensuring that systems are completely independent in memory writes - why slow it down with mutexes when avoiding it completely is so simple? If it truly needs to be written by multiple threads, try to find a non-blocking synchronization because burning cycles on synchronization is a waste of valuable time.
                     </p>
                     
                     <p>
-                        ECS is designed to avoid spaghetti code, but that doesn’t mean it’s immune - if you’re not careful, bad component design can quickly become a nasty problem. “Worse is Better” has no merit here, either do it the right way or don’t do it at all. In my first engine prototype, I implemented healthbar displays as part of the health component, and I figured this was fine since everything with health had a healthbar.
+                        ECS is designed to avoid spaghetti code, but that doesn’t mean it’s immune - if you’re not careful, bad component design can quickly become a nasty problem. “Worse is Better” has no merit here, either do it the right way or don’t do it at all. In my first engine prototype, I implemented healthbar displays as part of the health component, and I figured this was fine since nothing else used the health component.
                     </p>
                     
                     <p>
-                        As it turns out, I was dead wrong - since having health necessitated a healthbar, when I wanted to make crates display bullet holes when damaged instead of a healthbar, it was imposslbe. I could’ve continued the insanity and added both display methods to the health component, but the human brain has a fundamental inability to constantly keep a monolithic overdesigned system in working memory. Maximum granularity is absolutely necessary to benefit from the advantages of this architecture, and a much better choice is to make health displays their own component - with this you can use multiple displays at once, toggle them at will, and easily add more later.
+                        As it turns out, I was dead wrong - since having health necessitated a healthbar, it was impossible to make crates display bullet holes when damaged instead of a healthbar. I could’ve continued the insanity and added both display methods to the health component, but the human brain has a fundamental inability to constantly keep a monolithic overdesigned system in working memory. Maximum granularity is absolutely necessary to benefit from the advantages of this architecture, and a much better choice is to make health displays their own component - with this you can use multiple displays, toggle them at will, and easily add more later.
                     </p>
                     
                 </section>
@@ -148,7 +165,7 @@
             <input type = "checkbox" id = "Q4_2020">
             <label class = "label-toggle" for = "Q4_2020">Q4 2020 </label>
             <ul class = "menu-content">
-                <li> <a href = "/articles/game_design_with_ECS.html" > Game Design with ECS</a> </li>
+                <li> <a href = "/articles/game_design_with_ECS.html" >  Game Design with ECS </a> </li>
             </ul>
         </li>
     </ul>
@@ -160,7 +177,7 @@
             <input type = "checkbox" id = "ECS">
             <label class = "label-toggle" for = "ECS">ECS </label>
             <ul class = "menu-content">
-                <li> <a href = "/articles/game_design_with_ECS.html" > Game Design with ECS</a> </li>
+                <li> <a href = "/articles/game_design_with_ECS.html" >  Game Design with ECS </a> </li>
             </ul>
         </li>
     </ul>

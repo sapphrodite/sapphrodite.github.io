@@ -446,7 +446,7 @@ for article in articles:
     for topic in article.topics: 
         if topic not in articles_by_topic:
             articles_by_topic[topic] = []
-    articles_by_topic[topic].append(article)
+        articles_by_topic[topic].append(article)
 
 sidebar_generator = document_constructor()
 

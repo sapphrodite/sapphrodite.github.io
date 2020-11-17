@@ -29,11 +29,15 @@
             </h1>
             
             <span class = "metadata-span">
-                Published on the 6th of September, 2020
+                Published on the 16th of November, 2020
             </span>
             
             <span class = "metadata-span">
                 Topics:
+                <a class = "modlink"href = "/archive/Game-Development.html">
+                    Game-Development
+                </a>
+                ,
                 <a class = "modlink"href = "/archive/ECS.html">
                     ECS
                 </a>
@@ -42,7 +46,35 @@
             
             
             <p>
-                For the past several months I’ve been writing a game engine using the ECS framework, a data-oriented approach to game development that emphasizes composition and flexibility instead of traditional object-oriented methods. In my opinion, it’s more than just a programming technique - it’s a design philosophy that has its pros and cons just like everything else. Unfortunately, most articles on the subject are rather obtuse, and this was a struggle for me when first starting out. I’ve tried to include all the things I wanted to read before starting my engine, but I also cover the basics and give some extra tips.
+                For the past several months I’ve been writing a game engine using the ECS framework, a data-oriented approach to game development that emphasizes composition and offers more flexibility than traditional object-oriented methods. ECS is an acronym for Entity, Component, and System, the three constituents of the architecture. Almost all functionality and objects within your game will be represented through a combination of these.
+            </p>
+            
+            <p>
+                First, the basics—ECS is a data-oriented architecture that utilizes composition and flexibility instead of object-oriented inheritance trees. The design philosophy is simple—Entities are game objects that are linked with Components, Components are structures of data that provide functionality to the entity they’re linked with, while Systems operate independently on Components to process the game’s data and logic. Objects in your world no longer have unique classes to represent them— entities are entirely compositional, with components being able to be added and removed at runtime - this allows for components to provide temporary modifiers e.g. a poison effect, for example. Entities are usually represented as a single integer ID, and methods of mapping entities components and systems together vary wildly—I’ll discuss different techniques and their rationales later on, but it’s important to remember that there’s no singular correct way to implement ECS.
+            </p>
+            
+            <span>
+                The design is simple:
+            </span>
+            
+            <ul>
+                
+                <li>
+                    Entities are game objects, usually represented as integer IDs
+                </li>
+                
+                <li>
+                    Components are data structures that provide data and state to the entity they link with
+                </li>
+                
+                <li>
+                    Systems operate independently on Components to process the game’s data and logic.
+                </li>
+                
+            </ul>
+            
+            <p>
+                There are two main advantages to an ECS architecture - first, its data-oriented approach reduces code duplication and leads to simpler and more intuitive/maintainable code. Second, data-oriented architectures help optimization efforts in an era where multithreading and cache optimization are incredibly important. Let's go through the constituent parts one by one.
             </p>
             
             <a class = "readmore modlink" href = "/articles/game_design_with_ECS.html"> Read More... </a>

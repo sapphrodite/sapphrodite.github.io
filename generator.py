@@ -2,6 +2,15 @@ from bs4 import BeautifulSoup
 from os import listdir
 from os.path import isfile, join
 
+
+
+pages_source_dir = "sources/pages/"
+article_source_dir = "sources/articles/"
+archive_source_dir = "sources/archive/"
+pages_dest_dir = "pages/"
+article_dest_dir = "articles/"
+archive_dest_dir = "archive/"
+
 class article_data:
     date = []
     title = ""
@@ -56,7 +65,7 @@ def generate_indentation(depth):
     return string
 
 
-#######################################################################################
+###########################################################pages_source_dirpages_source_dir############################
 ##      Header code - generates the contents of the <head> tag and site header       ## 
 #######################################################################################
 
@@ -66,16 +75,16 @@ def insert_file_header(title, description, generator):
     generator.append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">")
     if description != "":
         generator.append("<meta name=\"description\" content=\"" + description + "\">")
-    generator.append("<link rel=\"stylesheet\" href=\"../theme.css\">")
+    generator.append("<link rel=\"stylesheet\" href=\"/theme.css\">")
     generator.append("<title>" + title + " - Caroline's Development Blog </title>")
 
 # Inserts HTML for the site navigation bar
 def insert_navmenu(generator):  
     generator.add_open_tag(tag("ul"))
     generator.append("<li> <a class = \"modlink\" href=\"/\"> Main page </a>")
-    generator.append("<li> <a class = \"modlink\" href=\"/archives/\"> Archives </a>") 
+    generator.append("<li> <a class = \"modlink\" href=/" + archive_dest_dir + "> Archives </a>") 
     generator.append("<li> <a class = \"modlink\" href=\"https://github.com/sapphrodite\"> GitHub </a>")
-    generator.append("<li> <a class = \"modlink\" rel=\"author\" href=\"/static_pages/about.html\"> About </a>")  
+    generator.append("<li> <a class = \"modlink\" rel=\"author\" href=/" + pages_dest_dir + "about.html> About </a>")  
     generator.add_close_tag(tag("ul"))
    
 
@@ -122,7 +131,7 @@ def generate_topic_page(article_group, cat_name):
     generator.add_close_tag(tag("main"))
          
 
-    f = open("archives/" + cat_name.replace(" ", "_") + ".html", "w")
+    f = open(archive_dest_dir + cat_name.replace(" ", "_") + ".html", "w")
     f.write(generator.output)
     f.close()
  
@@ -136,7 +145,7 @@ def generate_archives_index(articles_by_quarter, articles_by_topic ):
 
     process_archive_batch(articles_by_quarter, articles_by_topic, generate_section_div_archive, generator)
 
-    f = open("archives/index.html", "w")
+    f = open(archive_dest_dir + "index.html", "w")
     f.write(generator.output)
     f.close() 
 
@@ -217,7 +226,7 @@ def transform_article_group_collapsible(article_group, cat_name, generator):
 
 # Output an article group as a link to that topic page - pass this into the batch processor to generate the archives
 def transform_article_group_archives(article_group, cat_name, generator):
-    generator.append("<a href = \"/archives/" + cat_name.replace(" ", "_") + ".html\">" +  cat_name + "</a>")  
+    generator.append("<a href = /" + archive_dest_dir  + cat_name.replace(" ", "_") + ".html>" +  cat_name + "</a>")  
 
 
 ##################################################################################
@@ -234,7 +243,7 @@ def generate_toc(section_list, generator):
 def generate_topic_links(topics, generator):
     string = "Topics: " 
     for index, topic in enumerate(topics):
-        string += "<a class = \"modlink\" href = \"/archives/" + topic + ".html\"> " + topic + "</a>"
+        string += "<a class = \"modlink\" href = /" + archive_dest_dir + topic + ".html> " + topic + "</a>"
         if index + 1 != len(topics):
             string += ", "
     generator.append(string)
@@ -417,12 +426,11 @@ def get_article_metadata(filename, in_directory, out_directory):
     article.filename = out_directory + filename
     return article
  
-dir = "article_sources/"
-article_files = [f for f in listdir(dir) if isfile(join(dir, f))] 
+article_files = [f for f in listdir(article_source_dir) if isfile(join(article_source_dir, f))] 
 
 articles = []
 for file in article_files:
-    articles.append(get_article_metadata(file, dir, "articles/"))
+    articles.append(get_article_metadata(file, article_source_dir, article_dest_dir))
 articles.sort()
 
 
@@ -450,9 +458,8 @@ generate_articles(articles, sidebar_generator.output)
 generate_archives(articles_by_quarter, articles_by_topic)
 
 generate_main_page(articles)
-
-static_dir = "static_sources/"
-static_files = [f for f in listdir(static_dir) if isfile(join(static_dir, f))] 
+ 
+static_files = [f for f in listdir(pages_source_dir) if isfile(join(pages_source_dir, f))] 
  
 for file in static_files:
-    generate_static_page(get_article_metadata(file, static_dir, "static_pages/")) 
+    generate_static_page(get_article_metadata(file, pages_source_dir, pages_dest_dir)) 

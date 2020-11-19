@@ -344,11 +344,14 @@ def generate_article_body(html_tree, article_data, generator):
     generator.add_close_tag(tag("article"))
 
 
-def generate_article_wrapper(html_tree, navbar_text, generator):
-    generator.append_inside_tag(tag("main", "id = \"article-main\""), generate_article_body, html_tree, article)
+def generate_article_wrapper(html_tree, navbar_text, footer_text, generator):
+    generator.append_inside_tag(tag("main", "id = \"article-main\""), generate_article_body, html_tree, article) 
+    
     generator.add_open_tag(tag("nav", "id = \"article-nav\""))
     generator.append(navbar_text)
     generator.add_close_tag(tag("nav")) 
+
+    generator.append(footer_text) 
  
 
 def generate_article(article, navbar_text, footer_text):
@@ -358,8 +361,7 @@ def generate_article(article, navbar_text, footer_text):
     html_tree = BeautifulSoup(text, 'html.parser')
  
     generate_page_start(article.title, article.description, generator) 
-    generator.append_inside_tag(tag("div", "id = \"article-wrapper\""), generate_article_wrapper, html_tree, navbar_text)
-    generator.append(footer_text)
+    generator.append_inside_tag(tag("div", "id = \"article-wrapper\""), generate_article_wrapper, html_tree, navbar_text, footer_text)
     generator.add_close_tag(tag("body")) 
 
     generator.append("</html>")

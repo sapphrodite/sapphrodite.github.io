@@ -8,17 +8,13 @@
 /******************/
 
 /* sidebar and article body */
-main, #article-nav { 
-    background-color: #f3f5ff
-}
-
-#site-header, #footer-nav{
-    background-color: #e8f1ff
-}
+main, #article-nav, #site-header, #footer-nav { 
+    background-color: #fdfeff
+} 
 
 /* background */
 body {
-    background-color: #c0d0f2;   
+    background-color: #cad7f2;   
 }
 
 .modlink, .modlink:visited {
@@ -37,7 +33,7 @@ body {
 
 html { 
     color: #111; 
-    font-size: calc(1em + 0.33vmin);
+    font-size: calc(1em + 0.25vmin);
     font-family: sans-serif;   
 }
 
@@ -45,9 +41,8 @@ main {
     line-height: 1.5;
 }
 
-p { 
-    text-indent: 5ch;
-    margin: 0.75em 0em
+p {  
+    margin: 2em 0em
 }
   
 main ul, .toc ol {
@@ -120,21 +115,9 @@ main ul, .toc ol {
 /**    page formatting    **/
 /***************************/
 
-
 section {
     padding: 2em 0; 
     border-top: solid 0.25em #888888;
-}
-
-#article-nav {
-    box-sizing: border-box; 
-    display: none;
-    flex-basis: 20%;
-    padding: 0.5em 1.5em;
-    padding-right: 0.5em;
-    height: auto;
-    margin: 0 auto;
-    order: 1;
 }
 
 
@@ -162,15 +145,32 @@ section {
     flex-grow: 1;
 }
 
+
+#article-nav { 
+    display: none;   
+    grid-area: sidenav; 
+    padding: 0.5em 1.5em;  
+}
+
+
+
+
 #footer-nav {  
+    box-sizing: border-box;
     font-weight: bold;
-    padding: 1em 1.5em;
     position: sticky;
     bottom: 0;    
+    grid-area: footer; 
+    padding: 0.5em 1em;  
+    width: 100%;
+    border-color: #111;
+    border-top: solid;
 }
+
+
+
  
-
-
+ 
 #navmenu li {
     padding: 0 0.5ch;
 } 
@@ -181,6 +181,7 @@ section {
 #top-button {
     text-align: center;
 }
+
 #next-button {
     text-align: right;
 } 
@@ -199,12 +200,14 @@ section {
 /***********************/
 
 
-#article-wrapper {
-    display:flex;
-    flex-wrap: wrap; 
-    align-items: flex-start;
-    max-width: 170ch;
-    margin: auto;
+#article-wrapper {  
+    display: block;
+    grid-template-columns: 0.25fr 0.75fr; 
+    grid-template-areas:
+      "sidenav main"
+      ". main"
+      "footer main";
+    max-width: 170ch; 
 }
  
 
@@ -215,9 +218,9 @@ section {
 
 #article-main { 
     box-sizing: border-box;
-    padding: 1.5em; 
-    max-width: 110ch;
-    order: 2;
+    padding: 1.5em;  
+    width: 100%;
+    grid-area: main;
 }
 
 #article-main, #archive-main, #index-main { 
@@ -225,17 +228,33 @@ section {
 }
     
 
-@media screen and (min-width: 65em) { 
+@media screen and (min-width: 70em) { 
+    #article-wrapper {
+        display: grid;
+    }
+    #article-nav, #footer-nav {
+        box-sizing: border-box;  
+        max-width: 80ch;
+        width: max(75%, 25ch);
+        margin: 0 auto; 
+        border-top: none;;
+    } 
     #article-nav { 
         display: block;
+        grid-area: sidenav;
     }
     
     #article-main, #archive-main, #index-main { 
         padding: 2.5em 5em;
     }
 
+    #navmenu ul li:not(:last-child)::after {
+        margin-left: 0.25ch;
+        content: "|";
+    }
+    
     #article-main { 
-        flex-basis: min(65%, 120ch);
+        width: min(75%, 120ch);
         margin-right: 12.5%;
     }
 
@@ -244,14 +263,10 @@ section {
         padding: 1em 2.5em;
     }
 
-    main, #article-nav {
+    main, #article-nav, #footer-nav {
         border-radius: 1.5vh;
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-    }
-
-    #footer-nav {
-        padding: 1em 20em;
-    }
+    } 
 
     #site-header span, #navmenu  {
         flex-basis: unset;

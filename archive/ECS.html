@@ -37,8 +37,8 @@
             
             <span class = "metadata-span">
                 Topics:
-                <a class = "modlink"href = "/archive/Game-Development.html">
-                    Game-Development
+                <a class = "modlink"href = "/archive/gamedev.html">
+                    gamedev
                 </a>
                 ,
                 <a class = "modlink"href = "/archive/ECS.html">
@@ -49,15 +49,11 @@
             
             
             <p>
-                For the past several months I’ve been writing a game engine using the ECS framework, a data-oriented approach to game development that emphasizes composition and offers more flexibility than traditional object-oriented methods. ECS is an acronym for Entity, Component, and System, the three constituents of the architecture. Almost all functionality and objects within your game will be represented through a combination of these.
-            </p>
-            
-            <p>
-                First, the basics—ECS is a data-oriented architecture that utilizes composition and flexibility instead of object-oriented inheritance trees. The design philosophy is simple—Entities are game objects that are linked with Components, Components are structures of data that provide functionality to the entity they’re linked with, while Systems operate independently on Components to process the game’s data and logic. Objects in your world no longer have unique classes to represent them— entities are entirely compositional, with components being able to be added and removed at runtime - this allows for components to provide temporary modifiers e.g. a poison effect, for example. Entities are usually represented as a single integer ID, and methods of mapping entities components and systems together vary wildly—I’ll discuss different techniques and their rationales later on, but it’s important to remember that there’s no singular correct way to implement ECS.
+                For the past several months I’ve been writing a game engine using the ECS framework, a data-oriented approach to game development emphasizing composition and offering more flexibility than traditional object-oriented methods. There are two main advantages to an ECS architecture - first, its methods of abstraction reduce code duplication and lead to maintainable code. Second, data-oriented programming makes it far simpler to implement multithreading and optimize cache usage, two of the most important optimizations in modern computing.
             </p>
             
             <span>
-                The design is simple:
+                An ECS implementation consists of three different types of structures:
             </span>
             
             <ul>
@@ -67,17 +63,17 @@
                 </li>
                 
                 <li>
-                    Components are data structures that provide data and state to the entity they link with
+                    Components provide data and state to the entity they link with
                 </li>
                 
                 <li>
-                    Systems operate independently on Components to process the game’s data and logic.
+                    Systems operate on Components to process game logic, providing functionality..
                 </li>
                 
             </ul>
             
             <p>
-                There are two main advantages to an ECS architecture - first, its data-oriented approach reduces code duplication and leads to simpler and more intuitive/maintainable code. Second, data-oriented architectures help optimization efforts in an era where multithreading and cache optimization are incredibly important. Let's go through the constituent parts one by one.
+                With ECS, different types of objects in the game world are no longer represented by unique classes - they are are instead represented by entities, and are given their various characteristics by components and systems. Components can also be added and removed at runtime - this allows for components to provide temporary modifiers e.g. a poison effect. Let's go through the constituent parts one by one and discuss implementation details.
             </p>
             
             <a class = "readmore modlink" href = "/articles/game_design_with_ECS.html"> Read More... </a>

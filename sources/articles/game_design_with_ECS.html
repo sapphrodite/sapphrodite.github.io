@@ -1,53 +1,50 @@
 <article-creation> 2020 11 16 </article-creation>
 <article-title> Game Design with ECS </article-title>
-<article-topics> Game-Development ECS </article-topics>
+<article-topics> gamedev ECS </article-topics>
 <article-description> A brief and simple overview of the ECS architecture, its uses, and how to properly utilize it to its fullest extent </article-description>
 
 <intro>
     <p>
-        For the past several months I’ve been writing a game engine using the ECS framework, a data-oriented approach to game development that emphasizes composition and offers more flexibility than traditional object-oriented methods. ECS is an acronym for Entity, Component, and System, the three constituents of the architecture. Almost all functionality and objects within your game will be represented through a combination of these.
-    </p> 
-    <p>
-        First, the basics—ECS is a data-oriented architecture that utilizes composition and flexibility instead of object-oriented inheritance trees. The design philosophy is simple—Entities are game objects that are linked with Components, Components are structures of data that provide functionality to the entity they’re linked with, while Systems operate independently on Components to process the game’s data and logic. Objects in your world no longer have unique classes to represent them— entities are entirely compositional, with components being able to be added and removed at runtime - this allows for components to provide temporary modifiers e.g. a poison effect, for example. Entities are usually represented as a single integer ID, and methods of mapping entities components and systems together vary wildly—I’ll discuss different techniques and their rationales later on, but it’s important to remember that there’s no singular correct way to implement ECS.
-    </p>  
-    <span> The design is simple: </span>
+        For the past several months I’ve been writing a game engine using the ECS framework, a data-oriented approach to game development emphasizing composition and offering more flexibility than traditional object-oriented methods. There are two main advantages to an ECS architecture - first, its methods of abstraction reduce code duplication and lead to maintainable code. Second, data-oriented programming makes it far simpler to implement multithreading and optimize cache usage, two of the most important optimizations in modern computing.
+    </p>     
+    <span> An ECS implementation consists of three different types of structures: </span>
     <ul> 
         <li> Entities are game objects, usually represented as integer IDs </li>
-        <li> Components are data structures that provide data and state to the entity they link with </li>
-        <li> Systems operate independently on Components to process the game’s data and logic. </li>
+        <li> Components provide data and state to the entity they link with </li>
+        <li> Systems operate on Components to process game logic, providing functionality.. </li>
     </ul>
     <p>
-        There are two main advantages to an ECS architecture - first, its data-oriented approach reduces code duplication and leads to simpler and more intuitive/maintainable code. Second, data-oriented architectures help optimization efforts in an era where multithreading and cache optimization are incredibly important. Let's go through the constituent parts one by one.
-    </p>  
+        With ECS, different types of objects in the game world are no longer represented by unique classes - they are are instead represented by entities, and are given their various characteristics by components and systems. Components can also be added and removed at runtime - this allows for components to provide temporary modifiers e.g. a poison effect. Let's go through the constituent parts one by one and discuss implementation details.
+    </p>   
 </intro> 
 <section id = "Entities">
     <p>
-        As mentioned, entities represent game objects and act as the “glue” of the engine. Entities are given data and characteristics by their components, and systems operate on this data to process game logic. Entities are usually linked to components by a container that stores which components an entity has and can be done in one of two ways – have component pools store which entities have their component, or have entities store which components they have. The second option is not preferable, as it requires each component type to have a numeric identifier, and it additionally centralizes all mapping data in one data structure which can lead to some very unfriendly code.
+        Entities are integer IDs representing game objects - all their characteristics are given by components, and their logic and functionality is provided by systems. It's essential to know whether an entity has a certain component type, and this data can either be stored in component pools or in an independent structure. The first option is preferable, as it automatically ensures that mapping data is accessible to anything operating on the components.
     </p> 
     <span> A few implementation notes: </span>
     <ul> 
-        <li> Implementing entities as integer IDs greatly simplifies your code and allows for optimization both by the compiler and on an algorithmic level. </li>
+        <li> Implementing entities as integer IDs greatly simplifies code and allows for optimization both by the compiler and on an algorithmic level. </li>
         <li> With a maximum entity count, an entity manager can be as simple as a “free list” which keeps track of all the available entity IDs, and modify it based on entity creation/deletion </li>
         <li> It is possible to link entities to systems instead, but is generally avoided - this causes problems if one system needs to handle multiple component types. </li>
-        <li> Bitmaps are the most space-efficient way of storing entity/component mapping, as you only need to store one bit per entry. </li>
+        <li> Bitmaps are the most space-efficient way of storing component existence, as only one bit is needed to store a true/false value.</li>
     </ul>
 
 </section>
 <section id = "Components">
     <p>
-        Components, plain and simple, are data buckets. As mentioned before, they provide characteristics and data to game objects, and can be added and removed at any time – poison effects are a great example of a temporary component. One thing to watch out for is bad component design, which can quickly lead to the spaghetti code you’re trying to avoid if you’re not careful - either do it the right way or don’t do it at all. Ask yourself - If the new functionality you want to add to a preexisting system is an essential aspect of it, why didn’t you add it in the first place? Oftentimes something two things that seem like they belong together are actually better off as separate - maximum granularity is key to making the most out of an ECS architecture.
+        Components are classes that act as data buckets, providing characteristics and data to entities. Common components are health, velocity, and sprites. One thing to watch out for is component feature creep leading to messy and unmaintainable code. If the new functionality you want to add to a preexisting component is an essential aspect of it, why wasn't it added when first implementing the component? Oftentimes, two things that seem like they belong together are actually better off separate - maximum granularity is key to making the most out of an ECS architecture.
     </p>
     <span> Some advice on how to store and operate on components: </span>
     <ul> 
         <li> Pooling components in contiguous memory using a data structure that can access, add and delete components in constant time will allow for better speed, cache locality and promote system independence </li>
         <li> Components should ideally contain no game code besides, perhasps, convenience methods to modify their own state. </li>
-        <li> If you want dynamic storage then a slot map is probably your best data structure. If you prefer static storage, arrays indexed by entity ID are a simpler cheaper. </li>
+        <li> If you're using dynamic storage then a slot map is probably the best data structure. If you prefer static storage, arrays indexed by entity ID are a simpler cheaper. </li>
         <li> An aside for static storage users – To get the next element in a pool, it’s highly preferable to count trailing zeros on the bitmap, because looping eats up cycles testing empty slots. </li>
     </ul>
 </section>
 <section id = "Systems">
     <p>
-        Systems operate on entities and components to process the logic of the game – collision detection, an AI pathfinder and damage are all examples of distinct systems. Systems and their code exist independently of each other, leading to easier debugging, bugfixing, and reducing the chances of spaghetti code. The separation of game logic into discrete units makes it incredibly easy to implement multithreading - it can be as simple as running systems in different threads!  
+        Systems operate on components to process the logic of the game – collision detection, AI pathfinding and damage are all examples of distinct systems. Systems exist independently of each other, leading to easier debugging, bugfixing, and reducing the chances of spaghetti code. The separation of game logic into discrete units makes it incredibly easy to implement multithreading - it can be as simple as running systems in different threads!  
     </p>
     <span> Proper memory utilization is key to system performance: </span>
     <ul> 

@@ -8,168 +8,166 @@
 </head>
 <body>
     <header id = "site-header">
-        <span> Caroline's Development Blog </span>
+        <a class = "modlink" href="/"> Caroline's Development Blog </a>
         <nav id = "navmenu">
             <ul>
-                <li> <a class = "modlink" href="/"> Main page </a>
-                <li> <a class = "modlink" href=/archive> Archives </a>
+                <li> <a class = "modlink" href="/archive/"> Archives </a>
                 <li> <a class = "modlink" href="https://github.com/sapphrodite"> GitHub </a>
                 <li> <a class = "modlink" rel="author" href=/pages/about.html> About </a>
             </ul>
         </nav>
     </header>
-    <div id = "article-wrapper">
-        <main id = "article-main">
-            <article>
-                <header class = "metadata">
-                    <h1 class = "page-header">  Game Design with ECS  </h1>
-                    <span class = "metadata-span">
-                        Published on the 16th of November, 2020
+    <main id = "article-main">
+        <article>
+            <header class = "metadata">
+                <h1 class = "page-header">  Game Design with ECS  </h1>
+                <span class = "metadata-span">
+                    Published on the 16th of November, 2020
 
-                    </span>
-                    <span class = "metadata-span">
-                        Topics: <a class = "modlink" href = /archive/gamedev.html> gamedev</a>, <a class = "modlink" href = /archive/ECS.html> ECS</a>
-                    </span>
-                </header>
-                <section>
+                </span>
+                <span class = "metadata-span">
+                    Topics: <a class = "modlink" href = /archive/gamedev.html> gamedev</a>, <a class = "modlink" href = /archive/ECS.html> ECS</a>
+                </span>
+            </header>
+            <section>
+                
+                <p>
+                    For the past several months I’ve been writing a game engine using the ECS framework, a data-oriented approach to game development emphasizing composition and offering more flexibility than traditional object-oriented methods. There are two main advantages to an ECS architecture - first, its methods of abstraction reduce code duplication and lead to maintainable code. Second, data-oriented programming makes it far simpler to implement multithreading and optimize cache usage, two of the most important optimizations in modern computing.
+                </p>
+                
+                <span>
+                    An ECS implementation consists of three different types of structures:
+                </span>
+                
+                <ul>
                     
-                    <p>
-                        For the past several months I’ve been writing a game engine using the ECS framework, a data-oriented approach to game development emphasizing composition and offering more flexibility than traditional object-oriented methods. There are two main advantages to an ECS architecture - first, its methods of abstraction reduce code duplication and lead to maintainable code. Second, data-oriented programming makes it far simpler to implement multithreading and optimize cache usage, two of the most important optimizations in modern computing.
-                    </p>
+                    <li>
+                        Entities are game objects, usually represented as integer IDs
+                    </li>
                     
-                    <span>
-                        An ECS implementation consists of three different types of structures:
-                    </span>
+                    <li>
+                        Components provide data and state to the entity they link with
+                    </li>
                     
-                    <ul>
-                        
-                        <li>
-                            Entities are game objects, usually represented as integer IDs
-                        </li>
-                        
-                        <li>
-                            Components provide data and state to the entity they link with
-                        </li>
-                        
-                        <li>
-                            Systems operate on Components to process game logic, providing functionality..
-                        </li>
-                        
-                    </ul>
+                    <li>
+                        Systems operate on Components to process game logic, providing functionality..
+                    </li>
                     
-                    <p>
-                        With ECS, different types of objects in the game world are no longer represented by unique classes - they are are instead represented by entities, and are given their various characteristics by components and systems. Components can also be added and removed at runtime - this allows for components to provide temporary modifiers e.g. a poison effect. Let's go through the constituent parts one by one and discuss implementation details.
-                    </p>
+                </ul>
+                
+                <p>
+                    With ECS, different types of objects in the game world are no longer represented by unique classes - they are are instead represented by entities, and are given their various characteristics by components and systems. Components can also be added and removed at runtime - this allows for components to provide temporary modifiers e.g. a poison effect. Let's go through the constituent parts one by one and discuss implementation details.
+                </p>
+                
+            </section>
+            <nav class = "toc">
+                <ol>
+                    <li> <a class = "modlink" href = "#Entities">Entities</a> </li>
+                    <li> <a class = "modlink" href = "#Components">Components</a> </li>
+                    <li> <a class = "modlink" href = "#Systems">Systems</a> </li>
+                    <li> <a class = "modlink" href = "#In_Conclusion">In Conclusion</a> </li>
+                </ol>
+            </nav>
+            <section id = "Entities">
+                <h2>Entities</h2>
+                
+                <p>
+                    Entities are integer IDs representing game objects - all their characteristics are given by components, and their logic and functionality is provided by systems. It's essential to know whether an entity has a certain component type, and this data can either be stored in component pools or in an independent structure. The first option is preferable, as it automatically ensures that mapping data is accessible to anything operating on the components.
+                </p>
+                
+                <span>
+                    A few implementation notes:
+                </span>
+                
+                <ul>
                     
-                </section>
-                <nav class = "toc">
-                    <ol>
-                        <li> <a class = "modlink" href = "#Entities">Entities</a> </li>
-                        <li> <a class = "modlink" href = "#Components">Components</a> </li>
-                        <li> <a class = "modlink" href = "#Systems">Systems</a> </li>
-                        <li> <a class = "modlink" href = "#In_Conclusion">In Conclusion</a> </li>
-                    </ol>
-                </nav>
-                <section id = "Entities">
-                    <h2>Entities</h2>
+                    <li>
+                        Implementing entities as integer IDs greatly simplifies code and allows for optimization both by the compiler and on an algorithmic level.
+                    </li>
                     
-                    <p>
-                        Entities are integer IDs representing game objects - all their characteristics are given by components, and their logic and functionality is provided by systems. It's essential to know whether an entity has a certain component type, and this data can either be stored in component pools or in an independent structure. The first option is preferable, as it automatically ensures that mapping data is accessible to anything operating on the components.
-                    </p>
+                    <li>
+                        With a maximum entity count, an entity manager can be as simple as a “free list” which keeps track of all the available entity IDs, and modify it based on entity creation/deletion
+                    </li>
                     
-                    <span>
-                        A few implementation notes:
-                    </span>
+                    <li>
+                        It is possible to link entities to systems instead, but is generally avoided - this causes problems if one system needs to handle multiple component types.
+                    </li>
                     
-                    <ul>
-                        
-                        <li>
-                            Implementing entities as integer IDs greatly simplifies code and allows for optimization both by the compiler and on an algorithmic level.
-                        </li>
-                        
-                        <li>
-                            With a maximum entity count, an entity manager can be as simple as a “free list” which keeps track of all the available entity IDs, and modify it based on entity creation/deletion
-                        </li>
-                        
-                        <li>
-                            It is possible to link entities to systems instead, but is generally avoided - this causes problems if one system needs to handle multiple component types.
-                        </li>
-                        
-                        <li>
-                            Bitmaps are the most space-efficient way of storing component existence, as only one bit is needed to store a true/false value.
-                        </li>
-                        
-                    </ul>
+                    <li>
+                        Bitmaps are the most space-efficient way of storing component existence, as only one bit is needed to store a true/false value.
+                    </li>
                     
-                </section>
-                <section id = "Components">
-                    <h2>Components</h2>
+                </ul>
+                
+            </section>
+            <section id = "Components">
+                <h2>Components</h2>
+                
+                <p>
+                    Components are classes that act as data buckets, providing characteristics and data to entities. Common components are health, velocity, and sprites. One thing to watch out for is component feature creep leading to messy and unmaintainable code. If the new functionality you want to add to a preexisting component is an essential aspect of it, why wasn't it added when first implementing the component? Oftentimes, two things that seem like they belong together are actually better off separate - maximum granularity is key to making the most out of an ECS architecture.
+                </p>
+                
+                <span>
+                    Some advice on how to store and operate on components:
+                </span>
+                
+                <ul>
                     
-                    <p>
-                        Components are classes that act as data buckets, providing characteristics and data to entities. Common components are health, velocity, and sprites. One thing to watch out for is component feature creep leading to messy and unmaintainable code. If the new functionality you want to add to a preexisting component is an essential aspect of it, why wasn't it added when first implementing the component? Oftentimes, two things that seem like they belong together are actually better off separate - maximum granularity is key to making the most out of an ECS architecture.
-                    </p>
+                    <li>
+                        Pooling components in contiguous memory using a data structure that can access, add and delete components in constant time will allow for better speed, cache locality and promote system independence
+                    </li>
                     
-                    <span>
-                        Some advice on how to store and operate on components:
-                    </span>
+                    <li>
+                        Components should ideally contain no game code besides, perhasps, convenience methods to modify their own state.
+                    </li>
                     
-                    <ul>
-                        
-                        <li>
-                            Pooling components in contiguous memory using a data structure that can access, add and delete components in constant time will allow for better speed, cache locality and promote system independence
-                        </li>
-                        
-                        <li>
-                            Components should ideally contain no game code besides, perhasps, convenience methods to modify their own state.
-                        </li>
-                        
-                        <li>
-                            If you're using dynamic storage then a slot map is probably the best data structure. If you prefer static storage, arrays indexed by entity ID are a simpler cheaper.
-                        </li>
-                        
-                        <li>
-                            An aside for static storage users – To get the next element in a pool, it’s highly preferable to count trailing zeros on the bitmap, because looping eats up cycles testing empty slots.
-                        </li>
-                        
-                    </ul>
+                    <li>
+                        If you're using dynamic storage then a slot map is probably the best data structure. If you prefer static storage, arrays indexed by entity ID are a simpler cheaper.
+                    </li>
                     
-                </section>
-                <section id = "Systems">
-                    <h2>Systems</h2>
+                    <li>
+                        An aside for static storage users – To get the next element in a pool, it’s highly preferable to count trailing zeros on the bitmap, because looping eats up cycles testing empty slots.
+                    </li>
                     
-                    <p>
-                        Systems operate on components to process the logic of the game – collision detection, AI pathfinding and damage are all examples of distinct systems. Systems exist independently of each other, leading to easier debugging, bugfixing, and reducing the chances of spaghetti code. The separation of game logic into discrete units makes it incredibly easy to implement multithreading - it can be as simple as running systems in different threads!
-                    </p>
+                </ul>
+                
+            </section>
+            <section id = "Systems">
+                <h2>Systems</h2>
+                
+                <p>
+                    Systems operate on components to process the logic of the game – collision detection, AI pathfinding and damage are all examples of distinct systems. Systems exist independently of each other, leading to easier debugging, bugfixing, and reducing the chances of spaghetti code. The separation of game logic into discrete units makes it incredibly easy to implement multithreading - it can be as simple as running systems in different threads!
+                </p>
+                
+                <span>
+                    Proper memory utilization is key to system performance:
+                </span>
+                
+                <ul>
                     
-                    <span>
-                        Proper memory utilization is key to system performance:
-                    </span>
+                    <li>
+                        If multiple systems write to the same memory, either put them in the same thread or find a non-blocking alternative to mutexes – you only have 16ms of calculations per frame, don't burn it on mutex locks.
+                    </li>
                     
-                    <ul>
-                        
-                        <li>
-                            If multiple systems write to the same memory, either put them in the same thread or find a non-blocking alternative to mutexes – you only have 16ms of calculations per frame, don't burn it on mutex locks.
-                        </li>
-                        
-                        <li>
-                            Ensure systems operate on component pools rather than an entity list – iterating through list of all entities is inefficient, redundant, and scales poorly with higher entity counts. Additionally, focusing solely on relations between data is a cleaner solution.
-                        </li>
-                        
-                    </ul>
+                    <li>
+                        Ensure systems operate on component pools rather than an entity list – iterating through list of all entities is inefficient, redundant, and scales poorly with higher entity counts. Additionally, focusing solely on relations between data is a cleaner solution.
+                    </li>
                     
-                </section>
-                <section id = "In_Conclusion">
-                    <h2>In Conclusion</h2>
-                    
-                    <p>
-                        ECS is a very useful architecture for game design, providing both flexibility and the potential for lots of optimizations. It's worth mentioning again that like every new framework or architecture that comes around, receiving performance benefits from ECS is reliant on the quality of your implementation. I’ll likely cover specific optimization later, but this should be enough to get started.
-                    </p>
-                    
-                </section>
-            </article>
-        </main>
-        <nav id = "article-nav">
-            <div class = "sidebar-sect">
+                </ul>
+                
+            </section>
+            <section id = "In_Conclusion">
+                <h2>In Conclusion</h2>
+                
+                <p>
+                    ECS is a very useful architecture for game design, providing both flexibility and the potential for lots of optimizations. It's worth mentioning again that like every new framework or architecture that comes around, receiving performance benefits from ECS is reliant on the quality of your implementation. I’ll likely cover specific optimization later, but this should be enough to get started.
+                </p>
+                
+            </section>
+        </article>
+    </main>
+    <nav id = "article-nav">
+        <div class = "sidebar-sect">
     <span class = "navlist-label" id = "Articles-by-Quarter">Articles by Quarter</span>
     <ul aria-labelledby = "Articles-by-Quarter" class = "article-group-sidebar">
         <li>
@@ -201,8 +199,8 @@
     </ul>
 </div>
 
-        </nav>
-        <nav id = "footer-nav">
+    </nav>
+    <nav id = "footer-nav">
             <ul>
                 <li id="prev-button">← Prev
                 <li id="top-button"> <a class = "modlink"  href = "#site-header"> ↑ Top ↑ </a>
@@ -210,6 +208,5 @@
             </ul>
         </nav>
 
-    </div>
 </body>
 </html>

@@ -8,19 +8,17 @@
 </head>
 <body>
     <header id = "site-header">
-        <span> Caroline's Development Blog </span>
+        <a class = "modlink" href="/"> Caroline's Development Blog </a>
         <nav id = "navmenu">
             <ul>
-                <li> <a class = "modlink" href="/"> Main page </a>
-                <li> <a class = "modlink" href=/archive/> Archives </a>
+                <li> <a class = "modlink" href="/archive/"> Archives </a>
                 <li> <a class = "modlink" href="https://github.com/sapphrodite"> GitHub </a>
                 <li> <a class = "modlink" rel="author" href=/pages/about.html> About </a>
             </ul>
         </nav>
     </header>
-    <main id = "archive-main">
-        <p> Hi! This website is currently under construction - this page isn't complete, and the about page is missing, but
-    who cares because i'm not sharing with too many people until it's finished - enjoy the one article I have :)</p>
+    <main id = "article-main">
+        <p> </p>
         <h1> Recent Articles </h1>
         <section class = "article-preview">
             
@@ -76,3 +74,39 @@
             <a class = "readmore modlink" href = "/articles/game_design_with_ECS.html"> Read More... </a>
         </section>
     </main>
+    <nav id = "article-nav">
+        <div class = "sidebar-sect">
+    <span class = "navlist-label" id = "Articles-by-Quarter">Articles by Quarter</span>
+    <ul aria-labelledby = "Articles-by-Quarter" class = "article-group-sidebar">
+        <li>
+            <input type = "checkbox" id = "Q4_2020">
+            <label class = "label-toggle" for = "Q4_2020">Q4 2020 </label>
+            <ul class = "menu-content">
+                <li> <a href = "/articles/game_design_with_ECS.html" >  Game Design with ECS </a> </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<div class = "sidebar-sect">
+    <span class = "navlist-label" id = "Articles-by-Topic">Articles by Topic</span>
+    <ul aria-labelledby = "Articles-by-Topic" class = "article-group-sidebar">
+        <li>
+            <input type = "checkbox" id = "gamedev">
+            <label class = "label-toggle" for = "gamedev">gamedev </label>
+            <ul class = "menu-content">
+                <li> <a href = "/articles/game_design_with_ECS.html" >  Game Design with ECS </a> </li>
+            </ul>
+        </li>
+        <li>
+            <input type = "checkbox" id = "ECS">
+            <label class = "label-toggle" for = "ECS">ECS </label>
+            <ul class = "menu-content">
+                <li> <a href = "/articles/game_design_with_ECS.html" >  Game Design with ECS </a> </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+    </nav>
+</body>
+</html>

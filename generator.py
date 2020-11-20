@@ -80,16 +80,15 @@ def insert_file_header(title, description, generator):
 
 # Inserts HTML for the site navigation bar
 def insert_navmenu(generator):  
-    generator.add_open_tag(tag("ul"))
-    generator.append("<li> <a class = \"modlink\" href=\"/\"> Main page </a>")
-    generator.append("<li> <a class = \"modlink\" href=/" + archive_dest_dir + "> Archives </a>") 
+    generator.add_open_tag(tag("ul")) 
+    generator.append("<li> <a class = \"modlink\" href=\"/" + archive_dest_dir + "\"> Archives </a>") 
     generator.append("<li> <a class = \"modlink\" href=\"https://github.com/sapphrodite\"> GitHub </a>")
     generator.append("<li> <a class = \"modlink\" rel=\"author\" href=/" + pages_dest_dir + "about.html> About </a>")  
     generator.add_close_tag(tag("ul"))
    
 
 def insert_site_header(generator):
-    generator.append("<span> Caroline's Development Blog </span>")  
+    generator.append("<a class = \"modlink\" href=\"/\"> Caroline's Development Blog </a>")  
     generator.append_inside_tag(tag("nav", "id = \"navmenu\""), insert_navmenu)
 
 def generate_page_start(title, description, generator):
@@ -161,7 +160,7 @@ def generate_archives(articles_by_quarter, articles_by_topic):
     
 
 
-def generate_main_page(article_list):  
+def generate_main_page(article_list, sidebar_string):  
     # love 2 hardcode, i'll fix this when i have at least 5 articles
     top5 = article_list[:1]
 
@@ -169,16 +168,23 @@ def generate_main_page(article_list):
     generate_page_start("Main Page", "", generator)
 
   
-    generator.add_open_tag(tag("main", "id = \"archive-main\""))  
-    generator.append("""<p> Hi! This website is currently under construction - this page isn't complete, and the about page is missing, but
-    who cares because i'm not sharing with too many people until it's finished - enjoy the one article I have :)</p>""")
+    generator.add_open_tag(tag("main", "id = \"article-main\""))  
+    generator.append("""<p> </p>""")
     generator.append("<h1> Recent Articles </h1>") 
     for article in top5:
         generator.append_inside_tag(tag("section", "class = \"article-preview\""), append_article_preview, article)
     generator.add_close_tag(tag("main"))
          
+    generator.add_open_tag(tag("nav", "id = \"article-nav\""))
+    generator.append(sidebar_string)
+    generator.add_close_tag(tag("nav")) 
+
+    generator.add_close_tag(tag("body")) 
+
+    generator.append("</html>")
 
     f = open("index.html", "w")
+
     f.write(generator.output)
     f.close()
     
@@ -343,15 +349,6 @@ def generate_article_body(html_tree, article_data, generator):
        generator.append_inside_tag(tag("section", "id = \"" + section["id"].replace(" ", "_") + "\""), process_section, section)  
     generator.add_close_tag(tag("article"))
 
-
-def generate_article_wrapper(html_tree, navbar_text, footer_text, generator):
-    generator.append_inside_tag(tag("main", "id = \"article-main\""), generate_article_body, html_tree, article) 
-    
-    generator.add_open_tag(tag("nav", "id = \"article-nav\""))
-    generator.append(navbar_text)
-    generator.add_close_tag(tag("nav")) 
-
-    generator.append(footer_text) 
  
 
 def generate_article(article, navbar_text, footer_text):
@@ -360,8 +357,14 @@ def generate_article(article, navbar_text, footer_text):
     text = open(article.source_location, "r").read()
     html_tree = BeautifulSoup(text, 'html.parser')
  
-    generate_page_start(article.title, article.description, generator) 
-    generator.append_inside_tag(tag("div", "id = \"article-wrapper\""), generate_article_wrapper, html_tree, navbar_text, footer_text)
+    generate_page_start(article.title, article.description, generator)  
+    generator.append_inside_tag(tag("main", "id = \"article-main\""), generate_article_body, html_tree, article) 
+    
+    generator.add_open_tag(tag("nav", "id = \"article-nav\""))
+    generator.append(navbar_text)
+    generator.add_close_tag(tag("nav")) 
+
+    generator.append(footer_text) 
     generator.add_close_tag(tag("body")) 
 
     generator.append("</html>")
@@ -459,7 +462,7 @@ process_archive_batch(articles_by_quarter, articles_by_topic, generate_section_d
 generate_articles(articles, sidebar_generator.output)
 generate_archives(articles_by_quarter, articles_by_topic)
 
-generate_main_page(articles)
+generate_main_page(articles, sidebar_generator.output)
  
 static_files = [f for f in listdir(pages_source_dir) if isfile(join(pages_source_dir, f))] 
  

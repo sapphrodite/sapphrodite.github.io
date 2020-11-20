@@ -23,6 +23,39 @@
         <section class = "article-preview">
             
             <h1 class = "page-header">
+                Latency Optimization with Sprite Batching
+            </h1>
+            
+            <span class = "metadata-span">
+                Published on the 20th of November, 2020
+            </span>
+            
+            <span class = "metadata-span">
+                Topics:
+                <a class = "modlink"href = "/archive/gamedev.html">
+                    gamedev
+                </a>
+                ,
+                <a class = "modlink"href = "/archive/opengl.html">
+                    opengl
+                </a>
+                ,
+                <a class = "modlink"href = "/archive/optimization.html">
+                    optimization
+                </a>
+                
+            </span>
+            
+            
+            <p>
+                Sprite batching is one of the most common and effective techniques for improving performance in video game renderers, referring to the process of rendering all sprites sharing a texture using a single draw call. Because sprites store vertices separately, this requires copying the data for all batched sprites into a large array that is sent once...  which might not seem like a speed improvement at first. If anything, one might naively say that this is in fact slower due to the extra cost of copying all the vertices. So, let’s design a test to take a look at why batching is effective, and how to utilize it optimally.
+            </p>
+            
+            <a class = "readmore modlink" href = "/articles/Latency optimization with sprite batching.html"> Read More... </a>
+        </section>
+        <section class = "article-preview">
+            
+            <h1 class = "page-header">
                 Game Design with ECS
             </h1>
             
@@ -82,6 +115,7 @@
             <input type = "checkbox" id = "Q4_2020">
             <label class = "label-toggle" for = "Q4_2020">Q4 2020 </label>
             <ul class = "menu-content">
+                <li> <a href = "/articles/Latency optimization with sprite batching.html" >  Latency Optimization with Sprite Batching </a> </li>
                 <li> <a href = "/articles/game_design_with_ECS.html" >  Game Design with ECS </a> </li>
             </ul>
         </li>
@@ -94,7 +128,22 @@
             <input type = "checkbox" id = "gamedev">
             <label class = "label-toggle" for = "gamedev">gamedev </label>
             <ul class = "menu-content">
+                <li> <a href = "/articles/Latency optimization with sprite batching.html" >  Latency Optimization with Sprite Batching </a> </li>
                 <li> <a href = "/articles/game_design_with_ECS.html" >  Game Design with ECS </a> </li>
+            </ul>
+        </li>
+        <li>
+            <input type = "checkbox" id = "opengl">
+            <label class = "label-toggle" for = "opengl">opengl </label>
+            <ul class = "menu-content">
+                <li> <a href = "/articles/Latency optimization with sprite batching.html" >  Latency Optimization with Sprite Batching </a> </li>
+            </ul>
+        </li>
+        <li>
+            <input type = "checkbox" id = "optimization">
+            <label class = "label-toggle" for = "optimization">optimization </label>
+            <ul class = "menu-content">
+                <li> <a href = "/articles/Latency optimization with sprite batching.html" >  Latency Optimization with Sprite Batching </a> </li>
             </ul>
         </li>
         <li>

@@ -20,8 +20,8 @@ class article_data:
     source_location = ""
 
     def __lt__ (self, b):
-        for i in range(2):
-            if self.date[i] < b.date[i]: 
+        for i in range(3):
+            if self.date[i] > b.date[i]: 
                 return True
         return False
 
@@ -162,7 +162,7 @@ def generate_archives(articles_by_quarter, articles_by_topic):
 
 def generate_main_page(article_list, sidebar_string):  
     # love 2 hardcode, i'll fix this when i have at least 5 articles
-    top5 = article_list[:1]
+    top5 = article_list[:2]
 
     generator = document_constructor()
     generate_page_start("Main Page", "", generator)
@@ -249,7 +249,7 @@ def generate_toc(section_list, generator):
 def generate_topic_links(topics, generator):
     string = "Topics: " 
     for index, topic in enumerate(topics):
-        string += "<a class = \"modlink\" href = /" + archive_dest_dir + topic + ".html> " + topic + "</a>"
+        string += "<a class = \"modlink\" href = /" + archive_dest_dir + topic + ".html>" + topic + "</a>"
         if index + 1 != len(topics):
             string += ", "
     generator.append(string)
@@ -413,7 +413,7 @@ def generate_articles(article_list, sidebar_string):
             next_article = article_list[index + 1]
         else:
             next_article = None
-        generate_article(article, sidebar_string, generate_footer_nav(prev_article, next_article))
+        generate_article(article, sidebar_string, generate_footer_nav(next_article, prev_article))
         prev_article = article
 
 def get_article_metadata(filename, in_directory, out_directory):

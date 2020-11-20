@@ -1,0 +1,153 @@
+<article-creation> 2020 11 20 </article-creation>
+<article-title> Latency Optimization with Sprite Batching </article-title>
+<article-topics> gamedev opengl optimization </article-topics>
+<article-description> Sprite batching is a common technique for renderer performance, but why is it so effective? </article-description>
+
+<intro>
+    <p>
+        Sprite batching is one of the most common and effective techniques for improving performance in video game renderers, referring to the process of rendering all sprites sharing a texture using a single draw call. Because sprites store vertices separately, this requires copying the data for all batched sprites into a large array that is sent once...  which might not seem like a speed improvement at first. If anything, one might naively say that this is in fact slower due to the extra cost of copying all the vertices. So, let’s design a test to take a look at why batching is effective, and how to utilize it optimally.
+    </p>      
+</intro> 
+<section id = "The Test Design"> 
+    <span> Let’s define some terms: </span>
+    <ul> 
+        <li> Latency is the time it takes data to travel </li>
+        <li> Bandwidth is the maximum rate of data transfer </li>
+        <li> Throughput is the transfer rate in a specific context </li>
+        <li> A quad is two right triangles aligned to form a rectangle </li>
+    </ul>
+    <p>
+        Modern dedicated GPUs have <a href = "https://en.wikipedia.org/wiki/PCI_Express#History_and_revisions"> incredible maximum throughput </a> - PCIe 3 x16 has a bandwidth of almost 16GB/s, with the recent PCIe 4 doubling that! No game can use all that, so clearly bandwidth isn’t a concern. Additionally, modern hardware is so unbelievably fast that the speed at which it can compute things is completely irrelevant for a 2D game. High bandwidth and incredible speed leads to an unfortunate outcome - GPUs spend most of their time doing absolutely nothing, waiting for data. Knowing this, let’s design a test to see how well a computer handles different batch sizes, and how the performance gain from batching differs when you change the total number of quads. There’s many ways to do this, just don’t fall prone to statistical outliers ruining your results. 
+    </p>    
+    <span> Here were the steps for my test design. I set up code to perform this test for a range of configurations, running it on several different devices. In the next section are the raw data results and their interpretation. </span>
+    <ul> 
+        <li> Every second, use the number of rendered frames to calculate the average time it takes to render a frame </li>
+        <li> Add that value to a list of average frametimes </li>
+        <li> Repeat for 10 seconds, then return the median average frametime </li>
+    </ul> 
+</section>
+<section id = "The Test Results">
+    <p>
+        I don’t know how to label HTML table axes, so I’ll explain the tables here. The horizontal axis represents the total number of quads that are being rendered, the vertical axis represents the batch size, and all table values are milliseconds per frame (because <a href = "http://www.mvps.org/directx/articles/fps_versus_frame_time.htm"> FPS is a horrible performance metric</a>). These tests are using my engine in a rather contrived way to prove a point about latency - please don’t think these results are representative of anything whatsoever.
+    </p>
+    <table>
+        <caption> <a href = "https://www.amd.com/en/products/cpu/amd-ryzen-5-2600"> CPU: Ryzen 5 2600,  </a> <a href = "https://www.amd.com/en/products/graphics/radeon-rx-570"> GPU: Radeon RX 570  </a> </caption>   
+        <tr>
+            <th> </th>
+            <th> 256 </th>
+            <th> 1024 </th>
+            <th> 4096 </th>
+            <th> 16384 </th> 
+        </tr> 
+        <tr>
+            <th> 1 </th>
+            <td> 1.05046 </td>
+            <td> 2.86338 </td>
+            <td> 10.8353 </td>
+            <td> 42.5217 </td>
+        </tr>       
+        <tr>
+            <th> 16 </th>
+            <td> 0.16629 </td>
+            <td> 0.38551 </td>
+            <td> 1.06593 </td>
+            <td> 3.09247 </td>
+        </tr>           
+ 
+        <tr>
+            <th> 256 </th>
+            <td> 0.09928 </td>
+            <td> 0.11018 </td>
+            <td> 0.18472 </td>
+            <td> 0.46910 </td>
+        </tr>       
+        <tr>
+            <th> 512 </th>
+            <td> 0.09959 </td>
+            <td> 0.10371 </td>
+            <td> 0.14248 </td>
+            <td> 0.31575 </td>
+        </tr>            
+        <tr>
+            <th> 1024 </th>
+            <td> 0.09985 </td>
+            <td> 0.10253 </td>
+            <td> 0.12440 </td>
+            <td> 0.22744 </td>
+        </tr>           
+        <tr>
+            <th> 2048 </th>
+            <td> 0.09957 </td>
+            <td> 0.10232 </td>
+            <td> 0.12133 </td>
+            <td> 0.20029 </td>
+        </tr>            
+    </table>
+    <table>   
+        <caption> <a href = "https://ark.intel.com/content/www/us/en/ark/products/196597/intel-core-i7-1065g7-processor-8m-cache-up-to-3-90-ghz.html"> CPU: Intel i7-1065G7,   GPU: Intel Iris Plus </a> </caption>     
+        <tr>
+            <th> </th>
+            <th> 256 </th>
+            <th> 1024 </th>
+            <th> 4096 </th>
+            <th> 16384 </th> 
+        </tr> 
+        <tr>
+
+            <th>  1  </th> 
+            <td> 0.97145 </td> 
+            <td> 3.42774 </td> 
+            <td> 12.9455 </td> 
+            <td> 49.3142 </td>
+        </tr>
+        <tr>
+            <th>  16  </th> 
+            <td> 0.52589 </td> 
+            <td> 0.64014 </td> 
+            <td> 1.07718 </td> 
+            <td> 3.50811 </td>
+        </tr>
+        <tr>
+            <th>  256  </th> 
+            <td> 0.59645 </td> 
+            <td> 0.60899 </td> 
+            <td> 0.65012 </td> 
+            <td> 0.87367 </td>
+        </tr>
+        <tr> 
+            <th>  512  </th> 
+            <td> 0.59637 </td>
+            <td> 0.60394 </td> 
+            <td> 0.64401 </td> 
+            <td> 0.77727 </td>
+        </tr>
+        <tr>
+            <th> 1024  </th>
+            <td> 0.59602 </td> 
+            <td> 0.60036 </td> 
+            <td> 0.64209 </td> 
+            <td> 0.77124 </td>
+        </tr>
+        <tr>
+            <th> 2048  </th> 
+            <td> 0.59680 </td> 
+            <td> 0.60152 </td> 
+            <td> 0.63800 </td> 
+            <td> 0.76454 </td>
+        </tr> 
+    </table>  
+    <p>
+        The first test on was my desktop with dedicated graphics, the second was on a friend's laptop with integrated graphics. A “batch” size of 1 represents unbatched rendering, and this row shows just how crippling latency is to performance. Many game objects in a 2D game only consist of one or two quads, so batching has drastic performance implications if you have a lot of objects. In fact, one of the two major benefits of texture atlases is that it permits large batch sizes - the other is that GPUs are picky and don’t like state changes. This isn't in the chart for obvious reasons, but on my desktop, a test with 1920 * 1080 (over two million) total vertices will take over 5 seconds to render a single frame without batching, but only takes 45 milliseconds with a batch size of 256!
+    </p>
+    <p>
+        iGPUs definitely don’t benefit from batching as much as dGPUs do, though. There's no significant improvement past the 16 batch size row, and on the 16384 quads column, the laptop reached a point of diminishing returns at only 512 batch size while the desktop never stopped seeing performance increases. There’s another thing, though - why the hell do the laptop results get slower as the batch size increases? Before you ask, yes, I tested this on multiple laptops and they all showed the same pattern.
+    </p>
+    <p>
+        Luckily, there’s a way to explain both of these - iGPUs lack dedicated VRAM and share the same main RAIM bus on-processor. Competition for resources probably leads to more unpredictable test results in situations where actual performance difference is negligible. The reason for this negligible increase, and why batching is less effective, is that RAM has far lower latency than PCIe. This means that optimizing for poor latency doesn't lead to faster rendering, but that doesn't mean it's useless - it’s quite possible that more efficient bus usage could lead to performance improvements in unexpected ways. At the end of the day, the abysmal bandwidth that DDR4 has compared to modern VRAM is probably the most limiting factor of iGPUs, not poor code optimization.
+    </p> 
+</section> 
+<section id = "The Takeaway">
+    <p>
+        What batch size am I going to pick for my engine? It’s important to remember that due to my using <a href = "http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-9-vbo-indexing/">vertex indexing,</a> batching does have an extra memory cost - 12 bytes per quad in my case. I’ll probably use a buffer size of either 512 or 1024 quads, but the diminishing returns after that aren’t worth the extra memory cost. It depends on how my game turns out, and I heavily encourage you to do this test for yourself only after you have an idea of what your usage profile looks like. However, even using small batch sizes is such an important optimization that can't really be considered optional.
+    </p>
+</section>

@@ -26,9 +26,13 @@ body {
     background-color: #fdfeff;
 }
 
+a:visited, a{
+    color: #1a40c7;
+}
 #site-header a {
     color: initial;
-}
+} 
+
 /***************************/
 /**    text formatting    **/
 /***************************/
@@ -88,8 +92,18 @@ main ul, .toc ol {
     content: "Table of Contents";
 }
 
+table { 
+    margin: 1em auto; 
+    text-align: justify;
+    border-collapse: collapse;
+}
 
-
+td, th {
+    padding: 0.1ch 1ch;
+    border-color: #111;
+    border-style: solid; 
+    border-width: 0.128em;
+}
 .page-header {
     text-align: center;
     font-size: 200%;    

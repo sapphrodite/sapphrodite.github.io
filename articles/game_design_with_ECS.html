@@ -30,6 +30,7 @@
                 </span>
             </header>
             <section>
+                <h2> Introduction </h2>
                 
                 <p>
                     For the past several months I’ve been writing a game engine using the ECS framework, a data-oriented approach to game development emphasizing composition and offering more flexibility than traditional object-oriented methods. There are two main advantages to an ECS architecture - first, its methods of abstraction reduce code duplication and lead to maintainable code. Second, data-oriented programming makes it far simpler to implement multithreading and optimize cache usage, two of the most important optimizations in modern computing.
@@ -59,15 +60,15 @@
                     With ECS, different types of objects in the game world are no longer represented by unique classes - they are are instead represented by entities, and are given their various characteristics by components and systems. Components can also be added and removed at runtime - this allows for components to provide temporary modifiers e.g. a poison effect. Let's go through the constituent parts one by one and discuss implementation details.
                 </p>
                 
+                <nav class = "toc">
+                    <ol>
+                        <li> <a class = "modlink" href = "#Entities">Entities</a> </li>
+                        <li> <a class = "modlink" href = "#Components">Components</a> </li>
+                        <li> <a class = "modlink" href = "#Systems">Systems</a> </li>
+                        <li> <a class = "modlink" href = "#In_Conclusion">In Conclusion</a> </li>
+                    </ol>
+                </nav>
             </section>
-            <nav class = "toc">
-                <ol>
-                    <li> <a class = "modlink" href = "#Entities">Entities</a> </li>
-                    <li> <a class = "modlink" href = "#Components">Components</a> </li>
-                    <li> <a class = "modlink" href = "#Systems">Systems</a> </li>
-                    <li> <a class = "modlink" href = "#In_Conclusion">In Conclusion</a> </li>
-                </ol>
-            </nav>
             <section id = "Entities">
                 <h2>Entities</h2>
                 

@@ -8,7 +8,7 @@
 /******************/
 
 /* sidebar and article body */
-main, #article-nav, #site-header, #footer-nav { 
+main, #article-nav, #site-header, #footer-nav, section { 
     background-color: #fdfeff
 } 
 
@@ -41,20 +41,19 @@ a:visited, a{
 html { 
     color: #111; 
     font-size: calc(1em + 0.25vmin);
-    font-family: sans-serif;   
+    font-family: sans-serif; 
 }
 
+
 main {
-    line-height: 1.5;
-    padding: 1.5em; 
-    box-sizing: border-box;
-    padding: 1.5em;  
-    width: 100%;
+    padding: max(1.5em, 7.5vw);
+    box-sizing: border-box;  
     grid-area: main;
 }
 
 p {  
-    margin: 2em 0em
+    line-height: 1.5;    
+    margin-top: 2em;
 }
   
 main ul, .toc ol {
@@ -71,6 +70,7 @@ main ul, .toc ol {
     padding: 0.5em;
     text-align: center; 
     margin: auto;  
+    margin-top: 2em;
 }
 
 .readmore, .toc {
@@ -83,16 +83,16 @@ main ul, .toc ol {
 
 .toc {
     font-size: 110%;
-    padding: 1em;
-    margin-bottom: 2em;
+    padding: 1em; 
+    margin-top: 2em;
 }
 
-.toc::before { 
-    font-weight: bold;
+.toc::before {  
     content: "Table of Contents";
 }
 
 table { 
+    font-size: 90%;
     margin: 1em auto; 
     text-align: justify;
     border-collapse: collapse;
@@ -100,9 +100,31 @@ table {
 
 td, th {
     padding: 0.1ch 1ch;
-    border-color: #111;
+    border-color: #668;
     border-style: solid; 
     border-width: 0.128em;
+}
+tbody > tr:nth-child(1n) {
+    background-color: #f3f8ff;
+}
+tbody > tr:nth-child(2n) {
+    background-color: #cad7f2;
+}
+
+.table-overflow {
+    overflow: auto;
+}
+ 
+.vertical_label {
+  transform: rotate(-90deg);
+  width: min-content;
+  padding: unset;
+  height: max-content;
+  text-align: center;
+}
+
+.horizontal_label {
+    text-align: center;
 }
 .page-header {
     text-align: center;
@@ -111,8 +133,8 @@ td, th {
 }  
 
 .metadata-span {
-    display: block;
-    font-weight: bold;
+    margin: 0;
+    display: block; 
     text-align: center; 
 }
 
@@ -122,15 +144,20 @@ td, th {
     padding-bottom: 2em;
 } 
 
- .navlist-label {
-     font-weight: bold;
+ .navlist-label { 
      font-size: 110%;
  }
 
 
+h1, h2 {
+    font-weight: normal;
+}
 
-
-
+main span {
+    display: block;
+    margin-top: 2em;
+    margin-bottom: 0.25em;
+}
 
 
 /***************************/
@@ -150,8 +177,7 @@ section {
 
     margin-bottom: 2em;
     padding: 1em 0em;
-
-    font-weight: bold;
+ 
     font-size: 150%;
     text-align: center;
 }
@@ -178,8 +204,7 @@ section {
 
 
 #footer-nav {  
-    box-sizing: border-box;
-    font-weight: bold;
+    box-sizing: border-box; 
     position: sticky;
     bottom: 0;    
     grid-area: footer; 
@@ -235,7 +260,7 @@ body {
 }
  
 
-#site-header span, #navmenu {
+#site-header a, #navmenu {
     flex-basis: 100%;
 }
   
@@ -273,16 +298,19 @@ body {
 
     #site-header {
         grid-area: header;
-        margin-bottom: 2.5em;
-        padding: 1em 2.5em;
+        margin-bottom: 2em;
+        padding: 1em 2.5em; 
     }
 
-    main, #article-nav, #footer-nav {
-        border-radius: 1.5vh;
+    main, #article-nav, #footer-nav, #site-header {
+        border-radius: 2vh;
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     } 
 
-    #site-header span, #navmenu  {
+    #site-header { 
+        border-radius: 0 0 2vh 2vh;
+    }
+    #site-header a, #navmenu  {
         flex-basis: unset;
     }
  

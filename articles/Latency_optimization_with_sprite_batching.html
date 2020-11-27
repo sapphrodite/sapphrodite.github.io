@@ -30,19 +30,20 @@
                 </span>
             </header>
             <section>
+                <h2> Introduction </h2>
                 
                 <p>
                     Sprite batching is one of the most common and effective techniques for improving performance in video game renderers, referring to the process of rendering all sprites sharing a texture using a single draw call. Because sprites store vertices separately, this requires copying the data for all batched sprites into a large array that is sent once...  which might not seem like a speed improvement at first. If anything, one might naively say that this is in fact slower due to the extra cost of copying all the vertices. So, let’s design a test to take a look at why batching is effective, and how to utilize it optimally.
                 </p>
                 
+                <nav class = "toc">
+                    <ol>
+                        <li> <a class = "modlink" href = "#The_Test_Design">The Test Design</a> </li>
+                        <li> <a class = "modlink" href = "#The_Test_Results">The Test Results</a> </li>
+                        <li> <a class = "modlink" href = "#The_Takeaway">The Takeaway</a> </li>
+                    </ol>
+                </nav>
             </section>
-            <nav class = "toc">
-                <ol>
-                    <li> <a class = "modlink" href = "#The_Test_Design">The Test Design</a> </li>
-                    <li> <a class = "modlink" href = "#The_Test_Results">The Test Results</a> </li>
-                    <li> <a class = "modlink" href = "#The_Takeaway">The Takeaway</a> </li>
-                </ol>
-            </nav>
             <section id = "The_Test_Design">
                 <h2>The Test Design</h2>
                 
@@ -103,376 +104,404 @@
                 <h2>The Test Results</h2>
                 
                 <p>
-                    I don’t know how to label HTML table axes, so I’ll explain the tables here. The horizontal axis represents the total number of quads that are being rendered, the vertical axis represents the batch size, and all table values are milliseconds per frame (because
+                    All table values are in milliseconds per frame (because
                     <a href = "http://www.mvps.org/directx/articles/fps_versus_frame_time.htm">
                         FPS is a horrible performance metric
                     </a>
                     ). These tests are using my engine in a rather contrived way to prove a point about latency - please don’t think these results are representative of anything whatsoever.
                 </p>
                 
-                <table>
-                    
-                    <caption>
+                <div class = "table-overflow">
+                    <table>
                         
-                        <a href = "https://www.amd.com/en/products/cpu/amd-ryzen-5-2600">
-                            CPU: Ryzen 5 2600,
-                        </a>
-                        
-                        <a href = "https://www.amd.com/en/products/graphics/radeon-rx-570">
-                            GPU: Radeon RX 570
-                        </a>
-                        
-                    </caption>
-                    
-                    <tr>
-                        
-                        <th>
+                        <caption>
                             
-                        </th>
+                            <a href = "https://www.amd.com/en/products/cpu/amd-ryzen-5-2600">
+                                CPU: Ryzen 5 2600,
+                            </a>
+                            
+                            <a href = "https://www.amd.com/en/products/graphics/radeon-rx-570">
+                                GPU: Radeon RX 570
+                            </a>
+                            
+                        </caption>
                         
-                        <th>
-                            256
-                        </th>
+                        <tr>
+                            
+                            <th rowspan = "8"class = "vertical_label">
+                                Batch Size
+                            </th>
+                            
+                            <th colspan = "5"class = "horizontal_label">
+                                Total number of quads
+                            </th>
+                            
+                        </tr>
                         
-                        <th>
-                            1024
-                        </th>
+                        <tr>
+                            
+                            <th>
+                                
+                            </th>
+                            
+                            <th>
+                                256
+                            </th>
+                            
+                            <th>
+                                1024
+                            </th>
+                            
+                            <th>
+                                4096
+                            </th>
+                            
+                            <th>
+                                16384
+                            </th>
+                            
+                        </tr>
                         
-                        <th>
-                            4096
-                        </th>
+                        <tr>
+                            
+                            <th>
+                                1
+                            </th>
+                            
+                            <td>
+                                1.0504
+                            </td>
+                            
+                            <td>
+                                2.8633
+                            </td>
+                            
+                            <td>
+                                10.835
+                            </td>
+                            
+                            <td>
+                                42.521
+                            </td>
+                            
+                        </tr>
                         
-                        <th>
-                            16384
-                        </th>
+                        <tr>
+                            
+                            <th>
+                                16
+                            </th>
+                            
+                            <td>
+                                0.1662
+                            </td>
+                            
+                            <td>
+                                0.3855
+                            </td>
+                            
+                            <td>
+                                1.0659
+                            </td>
+                            
+                            <td>
+                                3.0924
+                            </td>
+                            
+                        </tr>
                         
-                    </tr>
-                    
-                    <tr>
+                        <tr>
+                            
+                            <th>
+                                256
+                            </th>
+                            
+                            <td>
+                                0.0992
+                            </td>
+                            
+                            <td>
+                                0.1101
+                            </td>
+                            
+                            <td>
+                                0.1847
+                            </td>
+                            
+                            <td>
+                                0.4691
+                            </td>
+                            
+                        </tr>
                         
-                        <th>
-                            1
-                        </th>
+                        <tr>
+                            
+                            <th>
+                                512
+                            </th>
+                            
+                            <td>
+                                0.0995
+                            </td>
+                            
+                            <td>
+                                0.1037
+                            </td>
+                            
+                            <td>
+                                0.1424
+                            </td>
+                            
+                            <td>
+                                0.3157
+                            </td>
+                            
+                        </tr>
                         
-                        <td>
-                            1.05046
-                        </td>
+                        <tr>
+                            
+                            <th>
+                                1024
+                            </th>
+                            
+                            <td>
+                                0.0998
+                            </td>
+                            
+                            <td>
+                                0.1025
+                            </td>
+                            
+                            <td>
+                                0.1244
+                            </td>
+                            
+                            <td>
+                                0.2274
+                            </td>
+                            
+                        </tr>
                         
-                        <td>
-                            2.86338
-                        </td>
+                        <tr>
+                            
+                            <th>
+                                2048
+                            </th>
+                            
+                            <td>
+                                0.0995
+                            </td>
+                            
+                            <td>
+                                0.1023
+                            </td>
+                            
+                            <td>
+                                0.1213
+                            </td>
+                            
+                            <td>
+                                0.2002
+                            </td>
+                            
+                        </tr>
                         
-                        <td>
-                            10.8353
-                        </td>
-                        
-                        <td>
-                            42.5217
-                        </td>
-                        
-                    </tr>
-                    
-                    <tr>
-                        
-                        <th>
-                            16
-                        </th>
-                        
-                        <td>
-                            0.16629
-                        </td>
-                        
-                        <td>
-                            0.38551
-                        </td>
-                        
-                        <td>
-                            1.06593
-                        </td>
-                        
-                        <td>
-                            3.09247
-                        </td>
-                        
-                    </tr>
-                    
-                    <tr>
-                        
-                        <th>
-                            256
-                        </th>
-                        
-                        <td>
-                            0.09928
-                        </td>
-                        
-                        <td>
-                            0.11018
-                        </td>
-                        
-                        <td>
-                            0.18472
-                        </td>
-                        
-                        <td>
-                            0.46910
-                        </td>
-                        
-                    </tr>
-                    
-                    <tr>
-                        
-                        <th>
-                            512
-                        </th>
-                        
-                        <td>
-                            0.09959
-                        </td>
-                        
-                        <td>
-                            0.10371
-                        </td>
-                        
-                        <td>
-                            0.14248
-                        </td>
-                        
-                        <td>
-                            0.31575
-                        </td>
-                        
-                    </tr>
-                    
-                    <tr>
-                        
-                        <th>
-                            1024
-                        </th>
-                        
-                        <td>
-                            0.09985
-                        </td>
-                        
-                        <td>
-                            0.10253
-                        </td>
-                        
-                        <td>
-                            0.12440
-                        </td>
-                        
-                        <td>
-                            0.22744
-                        </td>
-                        
-                    </tr>
-                    
-                    <tr>
-                        
-                        <th>
-                            2048
-                        </th>
-                        
-                        <td>
-                            0.09957
-                        </td>
-                        
-                        <td>
-                            0.10232
-                        </td>
-                        
-                        <td>
-                            0.12133
-                        </td>
-                        
-                        <td>
-                            0.20029
-                        </td>
-                        
-                    </tr>
-                    
-                </table>
+                    </table>
+                </div>
                 
-                <table>
-                    
-                    <caption>
+                <div class = "table-overflow">
+                    <table>
                         
-                        <a href = "https://ark.intel.com/content/www/us/en/ark/products/196597/intel-core-i7-1065g7-processor-8m-cache-up-to-3-90-ghz.html">
-                            CPU: Intel i7-1065G7,   GPU: Intel Iris Plus
-                        </a>
-                        
-                    </caption>
-                    
-                    <tr>
-                        
-                        <th>
+                        <caption>
                             
-                        </th>
+                            <a href = "https://ark.intel.com/content/www/us/en/ark/products/196597/intel-core-i7-1065g7-processor-8m-cache-up-to-3-90-ghz.html">
+                                CPU: Intel i7-1065G7,   GPU: Intel Iris Plus
+                            </a>
+                            
+                        </caption>
                         
-                        <th>
-                            256
-                        </th>
+                        <tr>
+                            
+                            <th rowspan = "8"class = "vertical_label">
+                                Batch Size
+                            </th>
+                            
+                            <th colspan = "5"class = "horizontal_label">
+                                Total number of quads
+                            </th>
+                            
+                        </tr>
                         
-                        <th>
-                            1024
-                        </th>
+                        <tr>
+                            
+                            <th>
+                                
+                            </th>
+                            
+                            <th>
+                                256
+                            </th>
+                            
+                            <th>
+                                1024
+                            </th>
+                            
+                            <th>
+                                4096
+                            </th>
+                            
+                            <th>
+                                16384
+                            </th>
+                            
+                        </tr>
                         
-                        <th>
-                            4096
-                        </th>
+                        <tr>
+                            
+                            <th>
+                                1
+                            </th>
+                            
+                            <td>
+                                0.9714
+                            </td>
+                            
+                            <td>
+                                3.4277
+                            </td>
+                            
+                            <td>
+                                12.945
+                            </td>
+                            
+                            <td>
+                                49.314
+                            </td>
+                            
+                        </tr>
                         
-                        <th>
-                            16384
-                        </th>
+                        <tr>
+                            
+                            <th>
+                                16
+                            </th>
+                            
+                            <td>
+                                0.5258
+                            </td>
+                            
+                            <td>
+                                0.6401
+                            </td>
+                            
+                            <td>
+                                1.0771
+                            </td>
+                            
+                            <td>
+                                3.5081
+                            </td>
+                            
+                        </tr>
                         
-                    </tr>
-                    
-                    <tr>
+                        <tr>
+                            
+                            <th>
+                                256
+                            </th>
+                            
+                            <td>
+                                0.5964
+                            </td>
+                            
+                            <td>
+                                0.6089
+                            </td>
+                            
+                            <td>
+                                0.6501
+                            </td>
+                            
+                            <td>
+                                0.8736
+                            </td>
+                            
+                        </tr>
                         
-                        <th>
-                            1
-                        </th>
+                        <tr>
+                            
+                            <th>
+                                512
+                            </th>
+                            
+                            <td>
+                                0.5963
+                            </td>
+                            
+                            <td>
+                                0.6039
+                            </td>
+                            
+                            <td>
+                                0.6440
+                            </td>
+                            
+                            <td>
+                                0.7772
+                            </td>
+                            
+                        </tr>
                         
-                        <td>
-                            0.97145
-                        </td>
+                        <tr>
+                            
+                            <th>
+                                1024
+                            </th>
+                            
+                            <td>
+                                0.5960
+                            </td>
+                            
+                            <td>
+                                0.6003
+                            </td>
+                            
+                            <td>
+                                0.6420
+                            </td>
+                            
+                            <td>
+                                0.7712
+                            </td>
+                            
+                        </tr>
                         
-                        <td>
-                            3.42774
-                        </td>
+                        <tr>
+                            
+                            <th>
+                                2048
+                            </th>
+                            
+                            <td>
+                                0.5968
+                            </td>
+                            
+                            <td>
+                                0.6015
+                            </td>
+                            
+                            <td>
+                                0.6380
+                            </td>
+                            
+                            <td>
+                                0.7645
+                            </td>
+                            
+                        </tr>
                         
-                        <td>
-                            12.9455
-                        </td>
-                        
-                        <td>
-                            49.3142
-                        </td>
-                        
-                    </tr>
-                    
-                    <tr>
-                        
-                        <th>
-                            16
-                        </th>
-                        
-                        <td>
-                            0.52589
-                        </td>
-                        
-                        <td>
-                            0.64014
-                        </td>
-                        
-                        <td>
-                            1.07718
-                        </td>
-                        
-                        <td>
-                            3.50811
-                        </td>
-                        
-                    </tr>
-                    
-                    <tr>
-                        
-                        <th>
-                            256
-                        </th>
-                        
-                        <td>
-                            0.59645
-                        </td>
-                        
-                        <td>
-                            0.60899
-                        </td>
-                        
-                        <td>
-                            0.65012
-                        </td>
-                        
-                        <td>
-                            0.87367
-                        </td>
-                        
-                    </tr>
-                    
-                    <tr>
-                        
-                        <th>
-                            512
-                        </th>
-                        
-                        <td>
-                            0.59637
-                        </td>
-                        
-                        <td>
-                            0.60394
-                        </td>
-                        
-                        <td>
-                            0.64401
-                        </td>
-                        
-                        <td>
-                            0.77727
-                        </td>
-                        
-                    </tr>
-                    
-                    <tr>
-                        
-                        <th>
-                            1024
-                        </th>
-                        
-                        <td>
-                            0.59602
-                        </td>
-                        
-                        <td>
-                            0.60036
-                        </td>
-                        
-                        <td>
-                            0.64209
-                        </td>
-                        
-                        <td>
-                            0.77124
-                        </td>
-                        
-                    </tr>
-                    
-                    <tr>
-                        
-                        <th>
-                            2048
-                        </th>
-                        
-                        <td>
-                            0.59680
-                        </td>
-                        
-                        <td>
-                            0.60152
-                        </td>
-                        
-                        <td>
-                            0.63800
-                        </td>
-                        
-                        <td>
-                            0.76454
-                        </td>
-                        
-                    </tr>
-                    
-                </table>
+                    </table>
+                </div>
                 
                 <p>
                     The first test on was my desktop with dedicated graphics, the second was on a friend's laptop with integrated graphics. A “batch” size of 1 represents unbatched rendering, and this row shows just how crippling latency is to performance. Many game objects in a 2D game only consist of one or two quads, so batching has drastic performance implications if you have a lot of objects. In fact, one of the two major benefits of texture atlases is that it permits large batch sizes - the other is that GPUs are picky and don’t like state changes. This isn't in the chart for obvious reasons, but on my desktop, a test with 1920 * 1080 (over two million) total vertices will take over 5 seconds to render a single frame without batching, but only takes 45 milliseconds with a batch size of 256!

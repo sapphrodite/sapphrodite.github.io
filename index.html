@@ -21,31 +21,14 @@
         <p> </p>
         <h1> Recent Articles </h1>
         <section class = "article-preview">
-            
-            <h1 class = "page-header">
-                Latency Optimization with Sprite Batching
-            </h1>
-            
+            <h1 class = "page-header">  Latency Optimization with Sprite Batching  </h1>
             <span class = "metadata-span">
                 Published on the 20th of November, 2020
+
             </span>
-            
             <span class = "metadata-span">
-                Topics:
-                <a class = "modlink"href = "/archive/gamedev.html">
-                    gamedev
-                </a>
-                ,
-                <a class = "modlink"href = "/archive/opengl.html">
-                    opengl
-                </a>
-                ,
-                <a class = "modlink"href = "/archive/optimization.html">
-                    optimization
-                </a>
-                
+                Topics: <a class = "modlink" href = /archive/gamedev.html>gamedev</a>, <a class = "modlink" href = /archive/opengl.html>opengl</a>, <a class = "modlink" href = /archive/optimization.html>optimization</a>
             </span>
-            
             
             <p>
                 Sprite batching is one of the most common and effective techniques for improving performance in video game renderers, referring to the process of rendering all sprites sharing a texture using a single draw call. Because sprites store vertices separately, this requires copying the data for all batched sprites into a large array that is sent once...  which might not seem like a speed improvement at first. If anything, one might naively say that this is in fact slower due to the extra cost of copying all the vertices. So, let’s design a test to take a look at why batching is effective, and how to utilize it optimally.
@@ -54,27 +37,14 @@
             <a class = "readmore modlink" href = "/articles/Latency_optimization_with_sprite_batching.html"> Read More... </a>
         </section>
         <section class = "article-preview">
-            
-            <h1 class = "page-header">
-                Game Design with ECS
-            </h1>
-            
+            <h1 class = "page-header">  Game Design with ECS  </h1>
             <span class = "metadata-span">
                 Published on the 16th of November, 2020
+
             </span>
-            
             <span class = "metadata-span">
-                Topics:
-                <a class = "modlink"href = "/archive/gamedev.html">
-                    gamedev
-                </a>
-                ,
-                <a class = "modlink"href = "/archive/ECS.html">
-                    ECS
-                </a>
-                
+                Topics: <a class = "modlink" href = /archive/gamedev.html>gamedev</a>, <a class = "modlink" href = /archive/ECS.html>ECS</a>
             </span>
-            
             
             <p>
                 For the past several months I’ve been writing a game engine using the ECS framework, a data-oriented approach to game development emphasizing composition and offering more flexibility than traditional object-oriented methods. There are two main advantages to an ECS architecture - first, its methods of abstraction reduce code duplication and lead to maintainable code. Second, data-oriented programming makes it far simpler to implement multithreading and optimize cache usage, two of the most important optimizations in modern computing.

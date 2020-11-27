@@ -104,11 +104,10 @@ def generate_page_start(title, description, generator):
 ######################################################################################
 
 def append_article_preview(article, generator):
-    text = open(article.filename, "r").read()
+    text = open(article.source_location, "r").read()
     html_tree = BeautifulSoup(text, 'html.parser')
-    header = html_tree.find("article").find("header")
-    process_children(header, generator)
-    intro = html_tree.find("article").find("section")
+    generate_metadata_header(article, generator) 
+    intro = html_tree.find("intro")
     process_children(intro, generator)
     generator.append("<a class = \"readmore modlink\" href = \"/" + article.filename + "\"> Read More... </a>")
  
@@ -279,7 +278,7 @@ def generate_data_display(article_data, generator):
         generator.append_inside_tag(sptag, generate_topic_links, article_data.topics) 
 
 
-def generate_metadata_header(html_tree, article_data, generator):
+def generate_metadata_header(article_data, generator):
     generate_data_display( article_data, generator)
   
 def generate_footer_nav(prev_article, next_article):
@@ -318,6 +317,9 @@ def process_attributes(tag):
         attr_string += "\""
     return attr_string
 
+def process_tag(html_tag, generator): 
+    generator.append_inside_tag(tag(html_tag.name.strip(), process_attributes(html_tag)), process_children, html_tag)  
+
 # Recursively parse the children of this tag and add them to the string 
 def process_children(html_tag, generator): 
     for child in html_tag.children: 
@@ -325,8 +327,10 @@ def process_children(html_tag, generator):
             generator.append(child.strip())
             continue
 
-
-        generator.append_inside_tag(tag(child.name.strip(), process_attributes(child)), process_children, child)  
+        if child.name.strip() == "table":
+            generator.append_inside_tag(tag("div", "class = \"table-overflow\""), process_tag, child)
+        else:  
+            process_tag(child, generator)
 
 # Processes a section and turns it into a text string
 def process_section(section, generator):  
@@ -339,11 +343,15 @@ def generate_article_body(html_tree, article_data, generator):
         section_list.append(section["id"]) 
 
     generator.add_open_tag(tag("article"))
-    generator.append_inside_tag(tag("header", "class = \"metadata\""), generate_metadata_header, html_tree, article_data)
+    generator.append_inside_tag(tag("header", "class = \"metadata\""), generate_metadata_header, article_data)
 
     header_content = html_tree.find("intro")  
-    generator.append_inside_tag(tag("section"), process_children, header_content)
+    generator.add_open_tag(tag("section"))
+
+    generator.append("<h2> Introduction </h2>")
+    process_children(header_content, generator) 
     generator.append_inside_tag(tag("nav", "class = \"toc\""), generate_toc, section_list) 
+    generator.add_close_tag(tag("section"))
 
     for section in html_tree.find_all("section"):
        generator.append_inside_tag(tag("section", "id = \"" + section["id"].replace(" ", "_") + "\""), process_section, section)  

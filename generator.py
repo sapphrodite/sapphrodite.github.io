@@ -224,10 +224,12 @@ def process_archive_batch(articles_by_quarter, articles_by_topic, function, gene
 
 
 # Output an article group as a collapsible menu - pass this into the batch processor to generate a sidebar
-def transform_article_group_collapsible(article_group, cat_name, generator): 
-    generator.append("<input type = \"checkbox\" id = \"" + cat_name.replace(" ", "_") + "\">")
-    generator.append("<label class = \"label-toggle\" for = \"" + cat_name.replace(" ", "_") + "\">" + cat_name + " </label>") 
-    generator.append_inside_tag(tag("ul", "class = \"menu-content\""), generate_article_lis, article_group) 
+def transform_article_group_collapsible(article_group, cat_name, generator):  
+    def impl(generator):
+        generator.append("<summary>" + cat_name + "</summary>")
+        generator.append_inside_tag(tag("ul", "class = \"menu-content\""), generate_article_lis, article_group)
+
+    generator.append_inside_tag(tag("details"), impl)
 
 # Output an article group as a link to that topic page - pass this into the batch processor to generate the archives
 def transform_article_group_archives(article_group, cat_name, generator):

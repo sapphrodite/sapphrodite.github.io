@@ -325,16 +325,13 @@ body {
 /*************************/
 /**    sidebar stuff    **/
 /*************************/
-
-input[type='checkbox'] {
-    display: none;
-}
-
-.label-toggle {
+ 
+summary {
     user-select: none;
+    list-style: none;
 } 
  
-.label-toggle::before {
+summary::before {
     content: ' ';
     display: inline-block;
   
@@ -346,17 +343,11 @@ input[type='checkbox'] {
     transition: transform .033s ease-out;
 }
 
-.menu-content {
-    max-height: 0;
-    overflow: hidden; 
+.menu-content { 
     user-select: none;
 }
-
-input:checked ~ .menu-content {
-    max-height: 100%;
-}
-   
-input[type='checkbox']:checked + .label-toggle::before {
+ 
+details[open] summary::before {
     transform: rotate(90deg) translateX(-3px);
 }
 

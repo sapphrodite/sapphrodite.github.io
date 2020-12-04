@@ -7,7 +7,7 @@
     <p>
         For the past several months I’ve been writing a game engine using the ECS framework, a data-oriented approach to game development emphasizing composition and offering more flexibility than traditional object-oriented methods. There are two main advantages to an ECS architecture - first, its methods of abstraction reduce code duplication and lead to maintainable code. Second, data-oriented programming makes it far simpler to implement multithreading and optimize cache usage, two of the most important optimizations in modern computing.
     </p>     
-    <span> An ECS implementation consists of three different types of structures: </span>
+    <p> An ECS implementation consists of three different types of structures: </p>
     <ul> 
         <li> Entities are game objects, usually represented as integer IDs </li>
         <li> Components provide data and state to the entity they link with </li>
@@ -21,7 +21,7 @@
     <p>
         Entities are integer IDs representing game objects - all their characteristics are given by components, and their logic and functionality is provided by systems. It's essential to know whether an entity has a certain component type, and this data can either be stored in component pools or in an independent structure. The first option is preferable, as it automatically ensures that mapping data is accessible to anything operating on the components.
     </p> 
-    <span> A few implementation notes: </span>
+    <p> A few implementation notes: </p>
     <ul> 
         <li> Implementing entities as integer IDs greatly simplifies code and allows for optimization both by the compiler and on an algorithmic level. </li>
         <li> With a maximum entity count, an entity manager can be as simple as a “free list” which keeps track of all the available entity IDs, and modify it based on entity creation/deletion </li>
@@ -34,7 +34,7 @@
     <p>
         Components are classes that act as data buckets, providing characteristics and data to entities. Common components are health, velocity, and sprites. One thing to watch out for is component feature creep leading to messy and unmaintainable code. If the new functionality you want to add to a preexisting component is an essential aspect of it, why wasn't it added when first implementing the component? Oftentimes, two things that seem like they belong together are actually better off separate - maximum granularity is key to making the most out of an ECS architecture.
     </p>
-    <span> Some advice on how to store and operate on components: </span>
+    <p> Some advice on how to store and operate on components: </p>
     <ul> 
         <li> Pooling components in contiguous memory using a data structure that can access, add and delete components in constant time will allow for better speed, cache locality and promote system independence </li>
         <li> Components should ideally contain no game code besides, perhasps, convenience methods to modify their own state. </li>
@@ -46,7 +46,7 @@
     <p>
         Systems operate on components to process the logic of the game – collision detection, AI pathfinding and damage are all examples of distinct systems. Systems exist independently of each other, leading to easier debugging, bugfixing, and reducing the chances of spaghetti code. The separation of game logic into discrete units makes it incredibly easy to implement multithreading - it can be as simple as running systems in different threads!  
     </p>
-    <span> Proper memory utilization is key to system performance: </span>
+    <p> Proper memory utilization is key to system performance: </p>
     <ul> 
         <li> If multiple systems write to the same memory, either put them in the same thread or find a non-blocking alternative to mutexes – you only have 16ms of calculations per frame, don't burn it on mutex locks. </li>
         <li> Ensure systems operate on component pools rather than an entity list – iterating through list of all entities is inefficient, redundant, and scales poorly with higher entity counts. Additionally, focusing solely on relations between data is a cleaner solution. </li>

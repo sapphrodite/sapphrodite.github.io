@@ -9,7 +9,7 @@
     </p>      
 </intro> 
 <section id = "The Test Design"> 
-    <span> Let’s define some terms: </span>
+    <p> Let’s define some terms: </p>
     <ul> 
         <li> Latency is the time it takes data to travel </li>
         <li> Bandwidth is the maximum rate of data transfer </li>
@@ -19,7 +19,7 @@
     <p>
         Modern dedicated GPUs have <a href = "https://en.wikipedia.org/wiki/PCI_Express#History_and_revisions"> incredible maximum throughput </a> - PCIe 3 x16 has a bandwidth of almost 16GB/s, with the recent PCIe 4 doubling that! No game can use all that, so clearly bandwidth isn’t a concern. Additionally, modern hardware is so unbelievably fast that the speed at which it can compute things is completely irrelevant for a 2D game. High bandwidth and incredible speed leads to an unfortunate outcome - GPUs spend most of their time doing absolutely nothing, waiting for data. Knowing this, let’s design a test to see how well a computer handles different batch sizes, and how the performance gain from batching differs when you change the total number of quads. There’s many ways to do this, just don’t fall prone to statistical outliers ruining your results. 
     </p>    
-    <span> Here were the steps for my test design. I set up code to perform this test for a range of configurations, running it on several different devices. In the next section are the raw data results and their interpretation. </span>
+    <p> Here were the steps for my test design. I set up code to perform this test for a range of configurations, running it on several different devices. In the next section are the raw data results and their interpretation. </p>
     <ul> 
         <li> Every second, use the number of rendered frames to calculate the average time it takes to render a frame </li>
         <li> Add that value to a list of average frametimes </li>
